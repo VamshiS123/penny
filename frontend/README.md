@@ -15,7 +15,7 @@ A personal finance management application built with modern web technologies.
 git clone <YOUR_GIT_URL>
 
 # Step 2: Navigate to the project directory
-cd penny/main
+cd penny/frontend
 
 # Step 3: Install the necessary dependencies
 npm install
