@@ -1,7 +1,8 @@
 from typing import Optional, List, TYPE_CHECKING
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlmodel import Field, Relationship, SQLModel
+from pydantic import validator
 
 if TYPE_CHECKING:
     from .user import User
@@ -25,6 +26,21 @@ class UserAchievement(SQLModel, table=True):
     
     user: "User" = Relationship(back_populates="achievements")
     achievement: "Achievement" = Relationship(back_populates="user_links")
+
+    @validator("unlocked_at", pre=True)
+    def ensure_naive_datetime(cls, v):
+        if isinstance(v, str):
+            try:
+                v = v.replace("Z", "+00:00")
+                dt = datetime.fromisoformat(v)
+                if dt.tzinfo:
+                    return dt.astimezone(timezone.utc).replace(tzinfo=None)
+                return dt
+            except ValueError:
+                return v
+        if isinstance(v, datetime) and v.tzinfo is not None:
+            return v.astimezone(timezone.utc).replace(tzinfo=None)
+        return v
 
 # --- Shop Items ---
 class ShopItemBase(SQLModel):

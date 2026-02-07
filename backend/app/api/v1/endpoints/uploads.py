@@ -1,7 +1,7 @@
 import csv
 import io
 from typing import Any
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlmodel.ext.asyncio.session import AsyncSession
 

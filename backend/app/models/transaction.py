@@ -1,7 +1,8 @@
 from typing import Optional, TYPE_CHECKING
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 from sqlmodel import Field, Relationship, SQLModel
+from pydantic import validator
 
 if TYPE_CHECKING:
     from .user import User
@@ -12,6 +13,22 @@ class TransactionBase(SQLModel):
     amount: float
     date: datetime = Field(default_factory=datetime.utcnow)
     icon: str
+
+    @validator("date", pre=True)
+    def ensure_naive_datetime(cls, v):
+        if isinstance(v, str):
+            try:
+                # Handle ISO format from frontend (e.g. 2026-02-07T17:10:40.000Z)
+                v = v.replace("Z", "+00:00")
+                dt = datetime.fromisoformat(v)
+                if dt.tzinfo:
+                    return dt.astimezone(timezone.utc).replace(tzinfo=None)
+                return dt
+            except ValueError:
+                return v
+        if isinstance(v, datetime) and v.tzinfo is not None:
+            return v.astimezone(timezone.utc).replace(tzinfo=None)
+        return v
 
 class Transaction(TransactionBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { 
   Home, CreditCard, PieChart, Building2, Calendar, 
   Sparkles, Users, Search, Target, ShoppingBag, Settings,
-  ChevronLeft, ChevronRight, Flame, LogOut
+  ChevronLeft, ChevronRight, Flame, LogOut, Plus
 } from 'lucide-react';
 import { useFinance } from '@/contexts/FinanceContext';
 import pennyIcon from '@/assets/penny.png';
@@ -21,6 +21,7 @@ const mainNavItems = [
 ];
 
 const toolNavItems = [
+  { icon: Plus, label: 'Add Purchase', path: '/transactions/add' },
   { icon: Calendar, label: 'Time Calendar', path: '/time-calendar' },
   { icon: Sparkles, label: 'Future You', path: '/future-you' },
   { icon: Users, label: 'Financial Twin', path: '/financial-twin' },

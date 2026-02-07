@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { useFinance, Transaction } from '@/contexts/FinanceContext';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,7 +15,7 @@ import {
 } from '@/components/ui/select';
 import { 
   Search, Filter, Clock, ArrowUpDown, 
-  TrendingUp, TrendingDown, Calendar,
+  TrendingUp, TrendingDown, Calendar, Plus
 } from 'lucide-react';
 import { PennyMascot } from '@/components/PennyMascot';
 
@@ -31,6 +32,7 @@ const categories = [
 ];
 
 export default function Transactions() {
+  const navigate = useNavigate();
   const { data } = useFinance();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -137,6 +139,13 @@ export default function Transactions() {
         
         {/* Quick Stats */}
         <div className="flex gap-4">
+          <Button 
+            onClick={() => navigate('/transactions/add')}
+            className="btn-gradient-primary flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Add Transaction
+          </Button>
           <Card className="px-4 py-2 flex items-center gap-2">
             <TrendingDown className="w-4 h-4 text-destructive" />
             <div>
