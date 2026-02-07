@@ -9,7 +9,7 @@ import { PennyMascot } from '@/components/PennyMascot';
 import { useFinance } from '@/contexts/FinanceContext';
 import { login } from '@/lib/api';
 import { toast } from 'sonner';
-import { PiggyBank, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -48,9 +48,6 @@ export default function Login() {
         className="w-full max-w-md"
       >
         <div className="flex items-center gap-3 mb-8 justify-center">
-          <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-            <PiggyBank className="w-5 h-5 text-primary" />
-          </div>
           <span className="font-display font-bold text-2xl">Penny</span>
         </div>
 

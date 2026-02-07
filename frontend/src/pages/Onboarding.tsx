@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useFinance } from '@/contexts/FinanceContext';
@@ -14,11 +14,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowRight, Check, Shield, Plane, CreditCard, Car, Home, GraduationCap, Star, Upload, Building2, HelpCircle } from 'lucide-react';
-import { PennyMascot, PennyMood } from '@/components/PennyMascot';
+import { ArrowRight, Check, Shield, Plane, CreditCard, Car, Home, GraduationCap, Star, Upload, Building2 } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 import { uploadCSV } from '@/lib/api';
 import { toast } from 'sonner';
+import pennyPointing from '@/assets/penny_pointup.png';
+import { VerticalCutReveal } from '@/components/ui/vertical-cut-reveal';
 
 const steps = ['Income', 'About You', 'Goals', 'Connect Bank'];
 
@@ -50,6 +51,7 @@ export default function Onboarding() {
   const navigate = useNavigate();
   const { data, updateData, uploadCSV } = useFinance();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const continueButtonRef = useRef<HTMLButtonElement>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [incomeType, setIncomeType] = useState<'salary' | 'hourly'>('salary');
   const [salary, setSalary] = useState('');
@@ -154,12 +156,20 @@ export default function Onboarding() {
     }
   };
 
-  const getPennyMood = (): PennyMood => {
-    if (currentStep === 0 && calculateHourlyRate() > 0) return 'celebrating';
-    if (currentStep === 2 && selectedGoals.length > 0) return 'celebrating';
-    if (currentStep === 3) return 'thinking';
-    return 'waving';
-  };
+  // Auto-scroll to continue button when on goals step and goals are selected
+  useEffect(() => {
+    if (currentStep === 2 && selectedGoals.length > 0 && continueButtonRef.current) {
+      const timer = setTimeout(() => {
+        continueButtonRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'end',
+          inline: 'nearest'
+        });
+      }, 300); // Small delay to allow animation to complete
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep, selectedGoals.length]);
+
 
   const getPennyMessage = (): string => {
     switch (currentStep) {
@@ -167,7 +177,7 @@ export default function Onboarding() {
         if (calculateHourlyRate() > 0) {
           return `Nice! That's $${calculateHourlyRate().toFixed(2)} per hour of your life. Let's make every hour count!`;
         }
-        return "Hey there! I'm Penny. Let's figure out what an hour of your life is worth.";
+        return "Hey there! I'm Penny!";
       case 1:
         return "Tell me a bit about yourself so I can find your Financial Twin—people like you.";
       case 2:
@@ -181,6 +191,70 @@ export default function Onboarding() {
       default:
         return "Let's do this!";
     }
+  };
+
+  const renderAnimatedMessage = () => {
+    const message = getPennyMessage();
+    const parts = message.split("Penny");
+    
+    return (
+      <span className="inline-flex flex-wrap items-baseline">
+        {parts.map((part, i, arr) => {
+          if (i < arr.length - 1) {
+            return (
+              <span key={i} className="inline-flex items-baseline">
+                <VerticalCutReveal
+                  splitBy="words"
+                  staggerDuration={0.05}
+                  staggerFrom="first"
+                  transition={{
+                    type: "spring",
+                    stiffness: 200,
+                    damping: 21,
+                    delay: i * 0.3,
+                  }}
+                  containerClassName="inline-flex"
+                >
+                  {part}
+                </VerticalCutReveal>
+                <VerticalCutReveal
+                  splitBy="characters"
+                  staggerDuration={0.03}
+                  staggerFrom="first"
+                  transition={{
+                    type: "spring",
+                    stiffness: 200,
+                    damping: 21,
+                    delay: (i * 0.3) + 0.2,
+                  }}
+                  containerClassName="inline-flex"
+                  elementLevelClassName="text-primary font-bold"
+                >
+                  Penny
+                </VerticalCutReveal>
+              </span>
+            );
+          }
+          return (
+            <VerticalCutReveal
+              key={i}
+              splitBy="words"
+              staggerDuration={0.05}
+              staggerFrom="first"
+              transition={{
+                type: "spring",
+                stiffness: 200,
+                damping: 21,
+                delay: i * 0.3,
+              }}
+              containerClassName="inline-flex"
+            >
+              {part}
+            </VerticalCutReveal>
+          );
+        })}
+      </span>
+    );
   };
 
   const renderStepContent = () => {
@@ -534,18 +608,27 @@ export default function Onboarding() {
             key={currentStep}
           >
             <p className="text-foreground font-medium text-lg">
-              {getPennyMessage().split("Penny").map((part, i, arr) => 
-                i < arr.length - 1 ? (
-                  <span key={i}>{part}<span className="text-primary font-bold">Penny</span></span>
-                ) : part
-              )}
+              <span className="inline-block whitespace-nowrap">
+                {renderAnimatedMessage()}
+              </span>
             </p>
           </motion.div>
 
           {/* Penny Mascot */}
-          <div className="relative">
-            <PennyMascot mood={getPennyMood()} size="lg" />
-          </div>
+          <motion.div 
+            className="relative w-48 h-48 flex items-center justify-center"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          >
+            <motion.img 
+              src={pennyPointing} 
+              alt="Penny" 
+              className="w-full h-full object-contain drop-shadow-xl"
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          </motion.div>
         </div>
 
         {/* Right Column - Form Card */}
@@ -587,6 +670,7 @@ export default function Onboarding() {
                 </Button>
               )}
               <Button
+                ref={continueButtonRef}
                 onClick={handleNext}
                 className="flex-1 h-14 text-lg font-semibold rounded-xl btn-gradient-primary"
                 disabled={
@@ -607,18 +691,6 @@ export default function Onboarding() {
           </Card>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="p-4 border-t border-border/50 flex items-center justify-center gap-6 text-sm text-muted-foreground">
-        <button className="flex items-center gap-2 hover:text-foreground transition-colors">
-          <HelpCircle className="w-4 h-4" />
-          Why do we need this?
-        </button>
-        <span className="text-border">•</span>
-        <button className="hover:text-foreground transition-colors">Privacy Policy</button>
-        <span className="text-border">•</span>
-        <button className="hover:text-foreground transition-colors">Contact Support</button>
-      </footer>
     </div>
   );
 }
