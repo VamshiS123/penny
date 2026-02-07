@@ -203,7 +203,10 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
   // --- Mutations ---
   const updateUserMutation = useMutation({
     mutationFn: api.updateUser,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['user'] }),
+    onSuccess: (newData) => {
+        queryClient.setQueryData(['user'], newData);
+        queryClient.invalidateQueries({ queryKey: ['user'] });
+    },
   });
 
   const createGoalMutation = useMutation({
@@ -474,7 +477,11 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       window.location.href = "/login";
   };
 
-  const isLoading = isAuthenticated && (userQuery.isLoading || expensesQuery.isLoading);
+  // Only consider loading if we don't have data yet
+  const isLoading = isAuthenticated && (
+    (userQuery.isPending && !userQuery.data) || 
+    (expensesQuery.isPending && !expensesQuery.data)
+  );
 
   const shopCatalog = (shopQuery.data || []).map((item: any) => ({
       id: item.id,
