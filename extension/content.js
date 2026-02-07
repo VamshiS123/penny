@@ -83,7 +83,7 @@ function showPennyWarning() {
   const overlay = document.createElement('div');
   overlay.className = 'penny-overlay';
   
-  const mascotUrl = chrome.runtime.getURL('assets/penny-concerned.png');
+  const mascotUrl = chrome.runtime.getURL('assets/penny.png');
 
   overlay.innerHTML = `
     <div class="penny-modal">
