@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import pennyImage from '@/assets/penny-2.png';
+import pennyImage from '@/assets/penny.png';
 export type PennyMood = 'default' | 'waving' | 'thinking' | 'celebrating' | 'concerned' | 'analyzing';
 
 interface PennyMascotProps {

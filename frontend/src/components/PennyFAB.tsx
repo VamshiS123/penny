@@ -4,7 +4,7 @@ import { PennyMascot } from './PennyMascot';
 import { X, Lightbulb, TrendingUp, AlertTriangle, Send, Sparkles } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import pennyNew from '@/assets/penny-new.png';
+import pennyQuestions from '@/assets/penny-questions.png';
 
 const insights = [
   {
@@ -118,7 +118,7 @@ export function PennyFAB() {
         }}
       >
         <img 
-          src={pennyNew} 
+          src={pennyQuestions} 
           alt="Penny" 
           className="w-14 h-14 object-contain"
         />
@@ -156,7 +156,7 @@ export function PennyFAB() {
               <div className="flex items-center justify-between p-4 border-b border-border bg-gradient-to-r from-primary/5 to-secondary/5">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center overflow-hidden">
-                    <img src={pennyNew} alt="Penny" className="w-9 h-9 object-contain" />
+                    <img src={pennyQuestions} alt="Penny" className="w-9 h-9 object-contain" />
                   </div>
                   <div>
                     <h3 className="font-display font-bold">Chat with Penny</h3>

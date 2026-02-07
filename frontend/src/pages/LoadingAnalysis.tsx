@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { PennyMascot } from '@/components/PennyMascot';
 import { Progress } from '@/components/ui/progress';
+import pennyWorking from '@/assets/penny-computer.png';
 import { 
   BarChart3, Calculator, Coffee, FolderOpen, Sparkles, Flag,
   Pizza, Home, Car, Smartphone, Gamepad2, CreditCard
@@ -117,7 +117,7 @@ export default function LoadingAnalysis() {
   const CurrentIcon = currentPhasData?.icon;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gradient-to-b from-background to-accent/20">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-background">
       {/* Floating numbers background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(12)].map((_, i) => (
@@ -154,9 +154,10 @@ export default function LoadingAnalysis() {
           }}
           transition={{ duration: 0.5, repeat: currentPhase === 1 ? Infinity : 0 }}
         >
-          <PennyMascot 
-            mood={currentPhasData?.mood || 'analyzing'} 
-            size="xl" 
+          <img 
+            src={pennyWorking} 
+            alt="Penny working" 
+            className="w-64 h-64 object-contain drop-shadow-xl"
           />
         </motion.div>
 
@@ -169,13 +170,6 @@ export default function LoadingAnalysis() {
             exit={{ opacity: 0, y: -20 }}
             className="mb-8"
           >
-            <motion.div
-              className="flex justify-center mb-4"
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 0.5 }}
-            >
-              {CurrentIcon && <CurrentIcon className="w-10 h-10" />}
-            </motion.div>
             <h2 className="text-2xl font-display font-bold text-foreground mb-2">
               {currentPhasData?.message}
             </h2>

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { PennyMascot } from '@/components/PennyMascot';
 import { useState } from 'react';
+import pennyScroll from '@/assets/penny-scroll.png';
 
 export default function Dashboard() {
   const { data } = useFinance();
@@ -164,7 +165,11 @@ export default function Dashboard() {
         >
           <Card className="p-6 border-2 border-border relative overflow-hidden">
             <div className="flex items-start gap-4 mb-6">
-              <PennyMascot mood="waving" size="md" />
+              <img
+                src={pennyScroll}
+                alt="Penny"
+                className="w-16 h-16 object-contain drop-shadow-xl"
+              />
               <div>
                 <h2 className="text-xl font-bold">Penny's Daily Briefing</h2>
                 <p className="text-muted-foreground">Good morning, {userName}. You're doing great!</p>

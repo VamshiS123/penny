@@ -6,7 +6,7 @@ import {
   ChevronLeft, ChevronRight, Flame, LogOut
 } from 'lucide-react';
 import { useFinance } from '@/contexts/FinanceContext';
-import pennyIcon from '@/assets/penny-2.png';
+import pennyIcon from '@/assets/penny.png';
 
 interface AppSidebarProps {
   collapsed: boolean;

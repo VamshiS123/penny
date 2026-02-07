@@ -2,10 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useFinance } from '@/contexts/FinanceContext';
-import { PennyMascot } from '@/components/PennyMascot';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Clock } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
+import pennyGradHat from '@/assets/penny-gradhat.png';
 
 export default function FinanceBreakdown() {
   const navigate = useNavigate();
@@ -126,9 +126,10 @@ export default function FinanceBreakdown() {
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="shrink-0">
-            <PennyMascot 
-              mood={step >= 4 ? 'celebrating' : step >= 2 ? 'analyzing' : 'waving'} 
-              size="md" 
+            <img 
+              src={pennyGradHat} 
+              alt="Penny" 
+              className="w-24 h-24 object-contain drop-shadow-xl"
             />
           </div>
           <AnimatePresence mode="wait">
@@ -295,7 +296,11 @@ export default function FinanceBreakdown() {
               transition={{ delay: 0.5 }}
               className="text-center"
             >
-              <PennyMascot mood="celebrating" size="lg" className="mx-auto mb-4" />
+              <img 
+                src={pennyGradHat} 
+                alt="Penny" 
+                className="w-32 h-32 object-contain drop-shadow-xl mx-auto mb-4"
+              />
               <h3 className="text-xl font-display font-bold mb-2">
                 Here's my promise
               </h3>
