@@ -5,14 +5,108 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PennyMascot } from '@/components/PennyMascot';
-import { Coins, Check, Star, Sparkles, Shirt, Palette, Smile, LayoutGrid, Flame, ShoppingBag, BarChart3 } from 'lucide-react';
+import { Coins, Check, Star, Sparkles, Shirt, Palette, Smile, Flame, ShoppingBag } from 'lucide-react';
 import { toast } from 'sonner';
 import pennyTopHat from '@/assets/penny-tophat.png';
+import shopBaseballCap from '@/assets/shop-baseballcap.png';
+import shopCoolGlasses from '@/assets/shop-coolglasses.png';
+import shopCrown from '@/assets/shop-crown.png';
+import shopGoldTie from '@/assets/shop-goldtie.png';
+import shopRedTie from '@/assets/shop-redtie.png';
+import shopTopHat from '@/assets/shop-tophat.png';
 
 const rarityColors: Record<string, string> = {
   common: 'bg-muted text-muted-foreground',
   rare: 'bg-primary/20 text-primary',
   legendary: 'bg-secondary/20 text-secondary',
+};
+
+// Map theme names to color gradients
+const getThemeColors = (themeName: string): string => {
+  const name = themeName.toLowerCase();
+  
+  // Match specific theme names from backend seed data
+  if (name.includes('ocean') && name.includes('blue')) {
+    return 'bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600';
+  }
+  if (name.includes('sunset') || (name.includes('coral'))) {
+    return 'bg-gradient-to-br from-orange-400 via-pink-500 to-red-500';
+  }
+  if (name.includes('midnight') || (name.includes('dark') && !name.includes('green'))) {
+    return 'bg-gradient-to-br from-gray-800 via-gray-900 to-black';
+  }
+  if (name.includes('forest') || name.includes('green')) {
+    return 'bg-gradient-to-br from-green-400 via-green-500 to-green-600';
+  }
+  if (name.includes('gold') || name.includes('premium')) {
+    return 'bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500';
+  }
+  
+  // Fallback color keywords
+  if (name.includes('blue')) {
+    return 'bg-gradient-to-br from-blue-400 to-blue-600';
+  }
+  if (name.includes('orange') || name.includes('warm')) {
+    return 'bg-gradient-to-br from-orange-400 to-red-500';
+  }
+  if (name.includes('green') || name.includes('nature')) {
+    return 'bg-gradient-to-br from-green-400 to-green-600';
+  }
+  if (name.includes('purple') || name.includes('violet')) {
+    return 'bg-gradient-to-br from-purple-400 to-purple-600';
+  }
+  if (name.includes('pink') || name.includes('rose')) {
+    return 'bg-gradient-to-br from-pink-400 to-pink-600';
+  }
+  if (name.includes('dark') || name.includes('night')) {
+    return 'bg-gradient-to-br from-gray-800 to-gray-900';
+  }
+  if (name.includes('light') || name.includes('day') || name.includes('bright')) {
+    return 'bg-gradient-to-br from-yellow-200 to-yellow-400';
+  }
+  if (name.includes('red') || name.includes('crimson')) {
+    return 'bg-gradient-to-br from-red-400 to-red-600';
+  }
+  if (name.includes('amber')) {
+    return 'bg-gradient-to-br from-yellow-400 to-orange-500';
+  }
+  if (name.includes('teal') || name.includes('cyan')) {
+    return 'bg-gradient-to-br from-cyan-400 to-teal-500';
+  }
+  
+  // Default gradient
+  return 'bg-gradient-to-br from-primary to-secondary';
+};
+
+// Map outfit names to their corresponding images
+const getOutfitImage = (outfitName: string): string => {
+  const name = outfitName.toLowerCase();
+  
+  if (name.includes('baseball') || name.includes('cap')) {
+    return shopBaseballCap;
+  }
+  if (name.includes('cool') && name.includes('glass')) {
+    return shopCoolGlasses;
+  }
+  if (name.includes('crown') || name.includes('royal')) {
+    return shopCrown;
+  }
+  if (name.includes('gold') && name.includes('tie')) {
+    return shopGoldTie;
+  }
+  if (name.includes('red') && name.includes('tie')) {
+    return shopRedTie;
+  }
+  if (name.includes('top') && name.includes('hat')) {
+    return shopTopHat;
+  }
+  if (name.includes('scarf') || name.includes('cozy')) {
+    // Use red tie as fallback for scarf since we don't have a scarf image
+    return shopRedTie;
+  }
+  
+  // Default fallback
+  return shopTopHat;
 };
 
 export default function Shop() {
@@ -36,7 +130,7 @@ export default function Shop() {
     }
   };
 
-  const filteredItems = shopCatalog.filter(item => item.category === selectedCategory);
+  const filteredItems = shopCatalog.filter(item => item.category === selectedCategory).slice(0, 6);
   const ownedItemIds = data.ownedItems.map(i => i.id);
 
   return (
@@ -87,7 +181,7 @@ export default function Shop() {
 
       {/* Category tabs */}
       <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-        <TabsList className="grid grid-cols-5 w-full mb-6">
+        <TabsList className="grid grid-cols-4 w-full mb-6">
           <TabsTrigger value="outfit" className="font-medium gap-1.5">
             <Shirt className="w-4 h-4" /> Outfits
           </TabsTrigger>
@@ -96,9 +190,6 @@ export default function Shop() {
           </TabsTrigger>
           <TabsTrigger value="expression" className="font-medium gap-1.5">
             <Smile className="w-4 h-4" /> Expressions
-          </TabsTrigger>
-          <TabsTrigger value="widget" className="font-medium gap-1.5">
-            <LayoutGrid className="w-4 h-4" /> Widgets
           </TabsTrigger>
           <TabsTrigger value="streak" className="font-medium gap-1.5">
             <Flame className="w-4 h-4" /> Streaks
@@ -130,16 +221,17 @@ export default function Shop() {
 
                     {/* Item preview */}
                     <div className="h-24 flex items-center justify-center bg-muted rounded-xl mb-3">
-                      {item.category === 'outfit' && <PennyMascot mood="default" size="lg" />}
+                      {item.category === 'outfit' && (
+                        <img 
+                          src={getOutfitImage(item.name)} 
+                          alt={item.name}
+                          className="h-full w-auto object-contain"
+                        />
+                      )}
                       {item.category === 'theme' && (
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary" />
+                        <div className={`w-16 h-16 rounded-full ${getThemeColors(item.name)}`} />
                       )}
                       {item.category === 'expression' && <PennyMascot mood="celebrating" size="lg" />}
-                      {item.category === 'widget' && (
-                        <div className="w-full h-full bg-card rounded-lg p-2 flex items-center justify-center">
-                          <BarChart3 className="w-8 h-8 text-primary" />
-                        </div>
-                      )}
                       {item.category === 'streak' && (
                         <Flame className="w-10 h-10 text-secondary" />
                       )}

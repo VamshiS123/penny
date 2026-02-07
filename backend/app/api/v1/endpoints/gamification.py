@@ -1,6 +1,7 @@
 from typing import List, Any
+import uuid
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import select
+from sqlmodel import select, delete
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.api import deps
@@ -80,17 +81,37 @@ async def read_shop_items(
     result = await db.exec(statement)
     return result.all()
 
-@router.post("/shop/seed", response_model=List[ShopItem])
-async def seed_shop(
+@router.delete("/shop/clear")
+async def clear_shop_items(
+    db: AsyncSession = Depends(deps.get_db),
+) -> dict:
+    """Clear all shop items from the database"""
+    existing_items_result = await db.exec(select(ShopItem))
+    existing_items = existing_items_result.all()
+    count = len(existing_items)
+    
+    for item in existing_items:
+        await db.delete(item)
+    
+    await db.commit()
+    return {"message": f"Deleted {count} shop items"}
+
+@router.post("/shop/reseed", response_model=List[ShopItem])
+async def reseed_shop(
     db: AsyncSession = Depends(deps.get_db),
 ) -> List[ShopItem]:
-    existing = await db.exec(select(ShopItem))
-    if existing.first():
-        return []
-        
+    """Clear all shop items and reseed with fresh data"""
+    # Clear all existing items
+    existing_items_result = await db.exec(select(ShopItem))
+    existing_items = existing_items_result.all()
+    for item in existing_items:
+        await db.delete(item)
+    await db.commit()
+    
+    # Now seed fresh items
     items_data = [
       # Outfits
-      { "name": "Red Bowtie", "category": "outfit", "description": "A classic red look", "price": 50, "rarity": "common" },
+      { "name": "Baseball Cap", "category": "outfit", "description": "A classic casual look", "price": 50, "rarity": "common" },
       { "name": "Gold Bowtie", "category": "outfit", "description": "Shiny and elegant", "price": 150, "rarity": "rare" },
       { "name": "Top Hat", "category": "outfit", "description": "Fancy penguin vibes", "price": 100, "rarity": "common" },
       { "name": "Royal Crown", "category": "outfit", "description": "For the budget royalty", "price": 500, "rarity": "legendary" },
@@ -125,6 +146,60 @@ async def seed_shop(
         db.add(i)
     await db.commit()
     return items
+
+@router.post("/shop/seed", response_model=List[ShopItem])
+async def seed_shop(
+    db: AsyncSession = Depends(deps.get_db),
+) -> List[ShopItem]:
+    items_data = [
+      # Outfits
+      { "name": "Baseball Cap", "category": "outfit", "description": "A classic casual look", "price": 50, "rarity": "common" },
+      { "name": "Gold Bowtie", "category": "outfit", "description": "Shiny and elegant", "price": 150, "rarity": "rare" },
+      { "name": "Top Hat", "category": "outfit", "description": "Fancy penguin vibes", "price": 100, "rarity": "common" },
+      { "name": "Royal Crown", "category": "outfit", "description": "For the budget royalty", "price": 500, "rarity": "legendary" },
+      { "name": "Cool Glasses", "category": "outfit", "description": "Stay cool", "price": 75, "rarity": "common" },
+      { "name": "Cozy Scarf", "category": "outfit", "description": "Winter ready", "price": 80, "rarity": "common" },
+      
+      # Themes
+      { "name": "Ocean Blue", "category": "theme", "description": "Calm and serene", "price": 200, "rarity": "common" },
+      { "name": "Sunset Coral", "category": "theme", "description": "Warm and inviting", "price": 200, "rarity": "common" },
+      { "name": "Midnight Dark", "category": "theme", "description": "Easy on the eyes", "price": 200, "rarity": "common" },
+      { "name": "Forest Green", "category": "theme", "description": "Nature inspired", "price": 200, "rarity": "common" },
+      { "name": "Gold Premium", "category": "theme", "description": "Luxurious feel", "price": 1000, "rarity": "legendary" },
+      
+      # Expressions
+      { "name": "Dancing Penny", "category": "expression", "description": "Celebrate savings!", "price": 300, "rarity": "rare" },
+      { "name": "Sleeping Penny", "category": "expression", "description": "Passive income mode", "price": 250, "rarity": "rare" },
+      { "name": "Superhero Penny", "category": "expression", "description": "Budget hero!", "price": 400, "rarity": "rare" },
+      { "name": "Ninja Penny", "category": "expression", "description": "Stealthy savings", "price": 350, "rarity": "rare" },
+      
+      # Widgets
+      { "name": "Advanced Analytics", "category": "widget", "description": "Deep dive into your data", "price": 500, "rarity": "rare" },
+      { "name": "Investment Tracker", "category": "widget", "description": "Track your portfolio", "price": 600, "rarity": "rare" },
+      { "name": "Net Worth Timeline", "category": "widget", "description": "See your wealth grow", "price": 400, "rarity": "rare" },
+      
+      # Streak shields
+      { "name": "Streak Freeze x1", "category": "streak", "description": "Protect one missed day", "price": 50, "rarity": "common" },
+      { "name": "Streak Freeze x3", "category": "streak", "description": "Pack of three", "price": 120, "rarity": "common" },
+    ]
+    
+    # Get existing items by name to avoid duplicates
+    existing_items_result = await db.exec(select(ShopItem))
+    existing_items = existing_items_result.all()
+    existing_names = {item.name for item in existing_items}
+    
+    # Only add items that don't already exist
+    new_items = []
+    for item_data in items_data:
+        if item_data["name"] not in existing_names:
+            item = ShopItem(**item_data)
+            db.add(item)
+            new_items.append(item)
+    
+    if new_items:
+        await db.commit()
+    
+    return new_items
 
 @router.post("/shop/{id}/purchase")
 async def purchase_item(
