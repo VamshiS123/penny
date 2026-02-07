@@ -22,33 +22,76 @@
   box-shadow: 12px 12px 0px 0px #252525;
   text-align: center;
   position: relative;
+  animation: pennyModalEnter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.penny-modal-wide {
+  max-width: 480px;
+}
+
+@keyframes pennyModalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .penny-mascot-img {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   margin-bottom: 16px;
+}
+
+.penny-bob {
+  animation: pennyBob 2s ease-in-out infinite;
+}
+
+@keyframes pennyBob {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 .penny-title {
   font-size: 24px;
   font-weight: 800;
-  margin: 0 0 16px 0;
+  margin: 0 0 12px 0;
   color: #252525;
 }
 
+.penny-title.penny-success {
+  color: #2e7d32;
+}
+
+.penny-title.penny-error {
+  color: #c62828;
+}
+
 .penny-content {
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.5;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   color: #444;
 }
 
+.penny-content.penny-muted {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
 .penny-stats {
-  background: #f1f1f1;
+  background: #f5f5f5;
   border: 2px solid #252525;
   padding: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -57,11 +100,101 @@
 .penny-stat-row {
   display: flex;
   justify-content: space-between;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.penny-stat-row.penny-stat-header {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #666;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.penny-stat-row.penny-stat-total {
+  font-weight: 800;
+  font-size: 16px;
+  padding-top: 8px;
+  border-top: 2px solid #252525;
+}
+
+.penny-total {
+  font-weight: 800;
+  color: #455a64;
+}
+
+/* Items container */
+.penny-items-container {
+  background: #fff;
+  border: 2px solid #252525;
+  margin-bottom: 20px;
+  max-height: 150px;
+  overflow: hidden;
+}
+
+.penny-items-header {
+  background: #f5f5f5;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #666;
+  border-bottom: 2px solid #252525;
+}
+
+.penny-items-list {
+  padding: 8px;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.penny-item-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 8px;
+  font-size: 13px;
+  border-bottom: 1px solid #eee;
+}
+
+.penny-item-row:last-child {
+  border-bottom: none;
+}
+
+.penny-item-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 12px;
+  color: #333;
+}
+
+.penny-item-price {
+  font-weight: 700;
+  color: #455a64;
+}
+
+/* Category rows */
+.penny-category-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 14px;
+}
+
+.penny-category-name {
+  color: #444;
+}
+
+.penny-category-amount {
+  font-weight: 700;
+  color: #455a64;
 }
 
 .penny-time-cost {
-  color: #725e3f; /* Warm Goldish */
+  color: #725e3f;
   font-size: 20px;
   font-weight: 800;
   margin: 16px 0;
@@ -69,16 +202,22 @@
 
 .penny-buttons {
   display: flex;
-  gap: 16px;
+  gap: 12px;
 }
 
 .penny-btn {
   flex: 1;
-  padding: 12px;
+  padding: 14px 16px;
   font-weight: bold;
+  font-size: 14px;
   border: 2px solid #252525;
   cursor: pointer;
   transition: all 0.1s;
+}
+
+.penny-btn-full {
+  flex: none;
+  width: 100%;
 }
 
 .penny-btn-cancel {
@@ -88,14 +227,57 @@
 }
 
 .penny-btn-proceed {
-  background: #455a64; /* Slate Blue */
+  background: #455a64;
   color: white;
   box-shadow: 4px 4px 0px 0px #252525;
+}
+
+.penny-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #252525;
 }
 
 .penny-btn:active {
   box-shadow: none;
   transform: translate(4px, 4px);
+}
+
+/* Loader */
+.penny-loader {
+  background: #e0e0e0;
+  border: 2px solid #252525;
+  height: 8px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.penny-loader-bar {
+  height: 100%;
+  width: 30%;
+  background: linear-gradient(90deg, #455a64, #725e3f, #455a64);
+  background-size: 200% 100%;
+  animation: pennyLoaderMove 1.5s ease-in-out infinite, pennyLoaderShimmer 1s linear infinite;
+}
+
+@keyframes pennyLoaderMove {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(233%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes pennyLoaderShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .penny-dodge {
