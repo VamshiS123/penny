@@ -1,0 +1,146 @@
+Date,Merchant,Category,Amount,Account,Type
+2026-01-01,Company Payroll,Income,3200.00,Chase Checking,income
+2026-01-01,Luxury Apartments,Housing,1850.00,Chase Checking,expense
+2026-01-02,Starbucks,Food & Drink,6.50,Amex Gold,expense
+2026-01-02,Uber,Transportation,22.40,Amex Gold,expense
+2026-01-03,Whole Foods,Groceries,92.15,Chase Checking,expense
+2026-01-03,Netflix,Subscriptions,15.99,Amex Gold,expense
+2026-01-04,Chipotle,Food & Drink,14.20,Amex Gold,expense
+2026-01-04,Apple Storage,Subscriptions,2.99,Amex Gold,expense
+2026-01-05,Shell Gas,Transportation,52.00,Amex Gold,expense
+2026-01-05,Spotify,Subscriptions,9.99,Amex Gold,expense
+2026-01-06,Amazon,Shopping,42.50,Amex Gold,expense
+2026-01-07,Gym Co,Health,55.00,Chase Checking,expense
+2026-01-08,Blue Bottle,Food & Drink,7.00,Amex Gold,expense
+2026-01-09,Trader Joes,Groceries,64.20,Chase Checking,expense
+2026-01-10,Electric Bill,Utilities,145.00,Chase Checking,expense
+2026-01-11,Uber Eats,Food & Drink,32.40,Amex Gold,expense
+2026-01-12,Water Utility,Utilities,42.00,Chase Checking,expense
+2026-01-13,CVS,Health,18.50,Chase Checking,expense
+2026-01-14,Target,Shopping,124.00,Chase Checking,expense
+2026-01-15,Company Payroll,Income,3200.00,Chase Checking,income
+2026-01-15,Local Pub,Food & Drink,45.00,Amex Gold,expense
+2026-01-16,Lyft,Transportation,18.00,Amex Gold,expense
+2026-01-17,Whole Foods,Groceries,115.00,Chase Checking,expense
+2026-01-18,HBO Max,Subscriptions,15.99,Amex Gold,expense
+2026-01-19,Steam Games,Entertainment,59.99,Amex Gold,expense
+2026-01-20,Internet Co,Utilities,80.00,Chase Checking,expense
+2026-01-21,Starbucks,Food & Drink,6.50,Amex Gold,expense
+2026-01-22,Gas Station,Transportation,48.00,Amex Gold,expense
+2026-01-23,Nike,Shopping,130.00,Amex Gold,expense
+2026-01-24,AMC Theater,Entertainment,28.00,Amex Gold,expense
+2026-01-25,Brunch Spot,Food & Drink,38.00,Amex Gold,expense
+2026-01-26,Amazon,Shopping,15.20,Amex Gold,expense
+2026-01-27,Uber,Transportation,21.00,Amex Gold,expense
+2026-01-28,Trader Joes,Groceries,55.40,Chase Checking,expense
+2026-01-29,Starbucks,Food & Drink,6.50,Amex Gold,expense
+2026-01-30,Italian Dinner,Food & Drink,85.00,Amex Gold,expense
+2026-01-31,Interest Earned,Income,12.40,Chase Checking,income
+2026-02-01,Company Payroll,Income,3200.00,Chase Checking,income
+2026-02-01,Luxury Apartments,Housing,1850.00,Chase Checking,expense
+2026-02-02,Starbucks,Food & Drink,6.50,Amex Gold,expense
+2026-02-02,Uber,Transportation,12.00,Amex Gold,expense
+2026-02-03,Whole Foods,Groceries,88.00,Chase Checking,expense
+2026-02-03,Netflix,Subscriptions,15.99,Amex Gold,expense
+2026-02-04,Chipotle,Food & Drink,14.20,Amex Gold,expense
+2026-02-04,Spotify,Subscriptions,9.99,Amex Gold,expense
+2026-02-05,Shell Gas,Transportation,45.00,Amex Gold,expense
+2026-02-06,Amazon,Shopping,24.00,Amex Gold,expense
+2026-02-01,Gym Co,Health,55.00,Chase Checking,expense
+2026-01-05,Parking,Transportation,15.00,Amex Gold,expense
+2026-01-12,Parking,Transportation,15.00,Amex Gold,expense
+2026-01-19,Parking,Transportation,15.00,Amex Gold,expense
+2026-01-26,Parking,Transportation,15.00,Amex Gold,expense
+2026-01-02,News Sub,Subscriptions,10.00,Amex Gold,expense
+2026-01-15,Disney+,Subscriptions,13.99,Amex Gold,expense
+2026-01-20,Cloud Fee,Subscriptions,5.00,Amex Gold,expense
+2026-01-01,Phone Bill,Utilities,85.00,Chase Checking,expense
+2026-01-01,Adobe,Subscriptions,52.99,Amex Gold,expense
+2026-01-04,Bakery,Food & Drink,12.50,Amex Gold,expense
+2026-01-11,Bakery,Food & Drink,14.00,Amex Gold,expense
+2026-01-18,Bakery,Food & Drink,11.50,Amex Gold,expense
+2026-01-25,Bakery,Food & Drink,13.20,Amex Gold,expense
+2026-01-06,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-07,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-08,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-09,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-13,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-14,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-15,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-16,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-20,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-21,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-22,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-23,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-27,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-28,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-29,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-30,Public Transit,Transportation,2.50,Chase Checking,expense
+2026-01-03,Vending,Food & Drink,3.00,Chase Checking,expense
+2026-01-10,Vending,Food & Drink,3.00,Chase Checking,expense
+2026-01-17,Vending,Food & Drink,3.00,Chase Checking,expense
+2026-01-24,Vending,Food & Drink,3.00,Chase Checking,expense
+2026-01-31,Vending,Food & Drink,3.00,Chase Checking,expense
+2026-01-05,Pet Care,Other,65.00,Amex Gold,expense
+2026-01-19,Pet Care,Other,42.00,Amex Gold,expense
+2026-01-08,Pharmacy,Health,24.50,Chase Checking,expense
+2026-01-22,Pharmacy,Health,31.00,Chase Checking,expense
+2026-01-10,Grocery Pickup,Groceries,15.00,Chase Checking,expense
+2026-01-24,Grocery Pickup,Groceries,15.00,Chase Checking,expense
+2026-01-02,Donation,Other,50.00,Chase Checking,expense
+2026-01-15,Dividend,Income,24.50,Brokerage,income
+2026-01-20,Rent Refund,Income,150.00,Chase Checking,income
+2026-01-05,Coffee,Food & Drink,4.50,Chase Checking,expense
+2026-01-12,Coffee,Food & Drink,4.50,Chase Checking,expense
+2026-01-19,Coffee,Food & Drink,4.50,Chase Checking,expense
+2026-01-26,Coffee,Food & Drink,4.50,Chase Checking,expense
+2026-01-07,News,Subscriptions,12.00,Amex Gold,expense
+2026-01-21,News,Subscriptions,12.00,Amex Gold,expense
+2026-01-01,Insurance,Other,120.00,Chase Checking,expense
+2026-01-15,Car Service,Transportation,245.00,Amex Gold,expense
+2026-01-30,Gift,Other,75.00,Amex Gold,expense
+2026-01-04,App,Entertainment,1.99,Amex Gold,expense
+2026-01-11,App,Entertainment,4.99,Amex Gold,expense
+2026-01-18,App,Entertainment,2.99,Amex Gold,expense
+2026-01-25,App,Entertainment,9.99,Amex Gold,expense
+2026-01-03,Hardware,Other,34.00,Chase Checking,expense
+2026-01-17,Hardware,Other,12.00,Chase Checking,expense
+2026-01-31,Hardware,Other,45.00,Chase Checking,expense
+2026-01-06,Uber,Transportation,15.00,Amex Gold,expense
+2026-01-07,Uber,Transportation,12.00,Amex Gold,expense
+2026-01-08,Uber,Transportation,14.00,Amex Gold,expense
+2026-01-13,Uber,Transportation,11.00,Amex Gold,expense
+2026-01-14,Uber,Transportation,16.00,Amex Gold,expense
+2026-01-15,Uber,Transportation,19.00,Amex Gold,expense
+2026-01-20,Uber,Transportation,13.00,Amex Gold,expense
+2026-01-21,Uber,Transportation,17.00,Amex Gold,expense
+2026-01-22,Uber,Transportation,14.00,Amex Gold,expense
+2026-01-27,Uber,Transportation,12.00,Amex Gold,expense
+2026-01-28,Uber,Transportation,15.00,Amex Gold,expense
+2026-01-29,Uber,Transportation,18.00,Amex Gold,expense
+2026-01-02,Starbucks,Food & Drink,6.50,Amex Gold,expense
+2026-01-09,Starbucks,Food & Drink,6.50,Amex Gold,expense
+2026-01-16,Starbucks,Food & Drink,6.50,Amex Gold,expense
+2026-01-23,Starbucks,Food & Drink,6.50,Amex Gold,expense
+2026-01-30,Starbucks,Food & Drink,6.50,Amex Gold,expense
+2026-01-05,Lunch,Food & Drink,15.00,Amex Gold,expense
+2026-01-12,Lunch,Food & Drink,15.00,Amex Gold,expense
+2026-01-19,Lunch,Food & Drink,15.00,Amex Gold,expense
+2026-01-26,Lunch,Food & Drink,15.00,Amex Gold,expense
+2026-01-01,Laundry,Utilities,10.00,Chase Checking,expense
+2026-01-08,Laundry,Utilities,10.00,Chase Checking,expense
+2026-01-15,Laundry,Utilities,10.00,Chase Checking,expense
+2026-01-22,Laundry,Utilities,10.00,Chase Checking,expense
+2026-01-29,Laundry,Utilities,10.00,Chase Checking,expense
+2026-01-03,Snack,Food & Drink,5.00,Chase Checking,expense
+2026-01-10,Snack,Food & Drink,5.00,Chase Checking,expense
+2026-01-17,Snack,Food & Drink,5.00,Chase Checking,expense
+2026-01-24,Snack,Food & Drink,5.00,Chase Checking,expense
+2026-01-31,Snack,Food & Drink,5.00,Chase Checking,expense
+2026-01-04,Game,Entertainment,5.00,Amex Gold,expense
+2026-01-18,Game,Entertainment,10.00,Amex Gold,expense
+2026-01-25,Game,Entertainment,15.00,Amex Gold,expense
+2026-01-01,Storage,Subscriptions,5.00,Amex Gold,expense
+2026-01-15,Software,Subscriptions,20.00,Amex Gold,expense
+2026-01-20,Music,Subscriptions,10.00,Amex Gold,expense
+2026-01-30,Magazine,Subscriptions,5.00,Amex Gold,expense
