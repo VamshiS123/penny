@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Marquee } from '@/components/ui/marquee';
 import { PennyAICard } from '@/components/landing/PennyAICard';
 import { PennyMascot } from '@/components/PennyMascot';
+import landingVideo from '@/assets/landingvideo.mp4';
 import {
   Calendar, Search, TrendingUp, Users,
   Landmark, Upload, CheckCircle, Shield,
@@ -293,24 +294,24 @@ export default function Landing() {
               className="relative"
             >
               <div className="aspect-[4/3] bg-white border-2 border-primary rounded-xl shadow-neo flex flex-col items-center justify-center relative overflow-hidden group">
-                <div className="absolute inset-x-0 top-0 h-6 bg-muted border-b-2 border-primary flex items-center px-4 gap-2">
+                <div className="absolute inset-x-0 top-0 h-6 bg-muted border-b-2 border-primary flex items-center px-4 gap-2 z-10">
                   <div className="w-3 h-3 rounded-full bg-red-400 border border-primary/50" />
                   <div className="w-3 h-3 rounded-full bg-yellow-400 border border-primary/50" />
                   <div className="w-3 h-3 rounded-full bg-green-400 border border-primary/50" />
                   <div className="ml-4 flex-1 h-3 bg-white border border-primary/20 rounded-full" />
                 </div>
 
-                {/* Placeholder Content */}
-                <div className="text-center p-8 opacity-50 group-hover:opacity-100 transition-opacity">
-                  {/* Simulating extension UI */}
-                  <PennyMascot mood="concerned" size="lg" className="mx-auto mb-4" animate={false} />
-                  <div className="bg-primary text-white p-3 rounded-lg border-2 border-primary/50 shadow-sm max-w-[200px] mx-auto mb-4">
-                    <p className="text-xs font-bold">Wait! That's 4 hours of work.</p>
-                  </div>
-                  <p className="font-mono text-sm text-secondary italic mt-4">[ Extension Preview Screenshot ]</p>
-                </div>
+                {/* Video Content */}
+                <video
+                  src={landingVideo}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
 
-                <div className="absolute bottom-4 left-0 right-0 text-center">
+                <div className="absolute bottom-4 left-0 right-0 text-center z-10">
                   <Badge variant="outline" className="text-xs bg-muted border-primary text-secondary">
                     Chrome Extension Preview
                   </Badge>
