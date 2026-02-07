@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
-import { PennyMascot } from '@/components/PennyMascot';
 import { useFinance } from '@/contexts/FinanceContext';
 import { login } from '@/lib/api';
 import { toast } from 'sonner';
 import { ArrowRight } from 'lucide-react';
+import pennyPointUp from '@/assets/penny_pointup.png';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -53,7 +53,11 @@ export default function Login() {
 
         <Card className="p-8 border-2 border-border shadow-xl">
           <div className="text-center mb-8">
-            <PennyMascot mood="waving" size="md" className="mx-auto mb-4" />
+            <img
+              src={pennyPointUp}
+              alt="Penny"
+              className="w-32 h-32 object-contain mx-auto mb-4 drop-shadow-xl"
+            />
             <h1 className="text-2xl font-bold">Welcome Back!</h1>
             <p className="text-muted-foreground">Ready to save some time?</p>
           </div>
