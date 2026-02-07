@@ -138,6 +138,7 @@ interface FinanceContextType {
   logout: () => void;
   checkAuth: () => void;
   uploadCSV: (file: File) => Promise<void>;
+  addTransaction: (data: any) => Promise<any>;
 }
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
@@ -240,6 +241,10 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
     }
+  });
+
+  const createTransactionMutation = useMutation({
+    mutationFn: api.createTransaction,
   });
 
 
@@ -501,6 +506,14 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       checkAuth,
       uploadCSV: async (file: File) => {
           await uploadCSVMutation.mutateAsync(file);
+      },
+      addTransaction: async (data: any) => {
+          const result = await createTransactionMutation.mutateAsync(data);
+          await Promise.all([
+             queryClient.invalidateQueries({ queryKey: ['transactions'] }),
+             queryClient.invalidateQueries({ queryKey: ['user'] })
+          ]);
+          return result;
       },
     }}>
       {children}

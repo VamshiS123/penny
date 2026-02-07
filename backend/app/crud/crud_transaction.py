@@ -4,6 +4,7 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.models.transaction import Transaction, TransactionCreate, TransactionUpdate
+from app.models.transaction_split import TransactionSplit
 
 class CRUDTransaction:
     async def get(self, session: AsyncSession, id: uuid.UUID) -> Optional[Transaction]:
@@ -17,10 +18,32 @@ class CRUDTransaction:
         return result.all()
 
     async def create(self, session: AsyncSession, *, obj_in: TransactionCreate, user_id: uuid.UUID) -> Transaction:
-        db_obj = Transaction.model_validate(obj_in, update={"user_id": user_id})
+        # Separate splits from transaction data
+        splits_in = obj_in.splits
+        
+        # Create transaction
+        # Exclude splits from the initial creation to avoid relationship type mismatch errors
+        # (Transaction expects List[TransactionSplit], but obj_in has List[TransactionSplitCreate])
+        transaction_data = obj_in.model_dump(exclude={"splits"})
+        db_obj = Transaction.model_validate(transaction_data, update={"user_id": user_id})
+        
         session.add(db_obj)
         await session.commit()
         await session.refresh(db_obj)
+
+        # Create splits
+        if splits_in:
+            for split in splits_in:
+                db_split = TransactionSplit(
+                    transaction_id=db_obj.id,
+                    category=split.category,
+                    amount=split.amount,
+                    note=split.note
+                )
+                session.add(db_split)
+            await session.commit()
+            await session.refresh(db_obj) # Refresh to load splits relationship
+
         return db_obj
 
     async def update(

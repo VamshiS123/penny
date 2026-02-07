@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import Goals from "./pages/Goals";
 import Shop from "./pages/Shop";
 import Transactions from "./pages/Transactions";
+import AddTransaction from "./pages/AddTransaction";
 import TimeCalendar from "./pages/TimeCalendar";
 import FinancialTwin from "./pages/FinancialTwin";
 import Budgets from "./pages/Budgets";
@@ -60,6 +61,7 @@ const App = () => {
             <Route path="/goals" element={<Goals />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/transactions" element={<Transactions />} />
+            <Route path="/transactions/add" element={<AddTransaction />} />
             <Route path="/budgets" element={<Budgets />} />
             <Route path="/accounts" element={<Accounts />} />
             <Route path="/time-calendar" element={<TimeCalendar />} />
