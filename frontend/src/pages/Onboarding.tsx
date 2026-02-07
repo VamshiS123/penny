@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -160,8 +160,8 @@ export default function Onboarding() {
   useEffect(() => {
     if (currentStep === 2 && selectedGoals.length > 0 && continueButtonRef.current) {
       const timer = setTimeout(() => {
-        continueButtonRef.current?.scrollIntoView({ 
-          behavior: 'smooth', 
+        continueButtonRef.current?.scrollIntoView({
+          behavior: 'smooth',
           block: 'end',
           inline: 'nearest'
         });
@@ -179,7 +179,7 @@ export default function Onboarding() {
         }
         return "Hey there! I'm Penny!";
       case 1:
-        return "Tell me a bit about yourself so I can find your Financial Twin—people like you.";
+        return "Tell me a bit about yourself so I can find your Financial Twin—people with similar profiles.";
       case 2:
         if (selectedGoals.length > 0) {
           const goalName = goalOptions.find(g => g.id === selectedGoals[selectedGoals.length - 1])?.name;
@@ -196,7 +196,7 @@ export default function Onboarding() {
   const renderAnimatedMessage = () => {
     const message = getPennyMessage();
     const parts = message.split("Penny");
-    
+
     return (
       <span className="inline-flex flex-wrap items-baseline">
         {parts.map((part, i, arr) => {
@@ -228,7 +228,7 @@ export default function Onboarding() {
                     delay: (i * 0.3) + 0.2,
                   }}
                   containerClassName="inline-flex"
-                  elementLevelClassName="text-primary font-bold"
+                  elementLevelClassName="text-accent font-black"
                 >
                   Penny
                 </VerticalCutReveal>
@@ -269,52 +269,50 @@ export default function Onboarding() {
             className="space-y-6"
           >
             {/* Income type toggle */}
-            <div className="flex p-1 bg-muted/50 rounded-full">
+            <div className="flex p-1 bg-muted/50 rounded-full border-2 border-border/10">
               <button
                 onClick={() => setIncomeType('salary')}
-                className={`flex-1 py-3 px-6 rounded-full font-medium transition-all ${
-                  incomeType === 'salary' 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+                className={`flex-1 py-3 px-6 rounded-full font-bold transition-all border-2 ${incomeType === 'salary'
+                    ? 'bg-primary text-primary-foreground border-primary shadow-neo-sm transform -translate-y-[1px]'
+                    : 'text-muted-foreground border-transparent hover:text-foreground'
+                  }`}
               >
                 Salary
               </button>
               <button
                 onClick={() => setIncomeType('hourly')}
-                className={`flex-1 py-3 px-6 rounded-full font-medium transition-all ${
-                  incomeType === 'hourly' 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+                className={`flex-1 py-3 px-6 rounded-full font-bold transition-all border-2 ${incomeType === 'hourly'
+                    ? 'bg-primary text-primary-foreground border-primary shadow-neo-sm transform -translate-y-[1px]'
+                    : 'text-muted-foreground border-transparent hover:text-foreground'
+                  }`}
               >
                 Hourly
               </button>
             </div>
 
             {incomeType === 'salary' ? (
-              <div className="space-y-5">
+              <div className="space-y-6">
                 <div>
-                  <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block font-bold">
                     What's your annual salary?
                   </Label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                  <div className="relative group">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">$</span>
                     <Input
                       type="number"
                       placeholder="85,000"
                       value={salary}
                       onChange={e => setSalary(e.target.value)}
-                      className="pl-8 h-14 text-lg bg-muted/50 border-0 rounded-xl"
+                      className="pl-8 h-14 text-lg bg-white border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary shadow-sm transition-all"
                     />
                   </div>
                 </div>
                 <div>
-                  <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block font-bold">
                     Pay Frequency
                   </Label>
                   <Select value={payFrequency} onValueChange={setPayFrequency}>
-                    <SelectTrigger className="h-14 bg-muted/50 border-0 rounded-xl">
+                    <SelectTrigger className="h-14 bg-white border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary shadow-sm transition-all font-medium">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -326,24 +324,24 @@ export default function Onboarding() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-5">
+              <div className="space-y-6">
                 <div>
-                  <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block font-bold">
                     Hourly Rate
                   </Label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                  <div className="relative group">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">$</span>
                     <Input
                       type="number"
                       placeholder="25"
                       value={hourlyRate}
                       onChange={e => setHourlyRate(e.target.value)}
-                      className="pl-8 h-14 text-lg bg-muted/50 border-0 rounded-xl"
+                      className="pl-8 h-14 text-lg bg-white border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary shadow-sm transition-all"
                     />
                   </div>
                 </div>
                 <div>
-                  <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block font-bold">
                     Hours per Week
                   </Label>
                   <Input
@@ -351,7 +349,7 @@ export default function Onboarding() {
                     placeholder="40"
                     value={hoursPerWeek}
                     onChange={e => setHoursPerWeek(e.target.value)}
-                    className="h-14 text-lg bg-muted/50 border-0 rounded-xl"
+                    className="h-14 text-lg bg-white border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary shadow-sm transition-all"
                   />
                 </div>
               </div>
@@ -362,11 +360,11 @@ export default function Onboarding() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-5 bg-primary/10 rounded-2xl border border-primary/20"
+                className="p-6 bg-muted/30 rounded-2xl border-2 border-border/10"
               >
-                <p className="text-xs uppercase tracking-wider text-primary font-semibold mb-1">Live Calculation</p>
-                <p className="text-foreground">
-                  1 hour of your life = <span className="text-2xl font-bold text-primary">${calculateHourlyRate().toFixed(2)}</span>
+                <p className="text-xs uppercase tracking-wider text-muted-foreground font-bold mb-2">Live Calculation</p>
+                <p className="text-foreground text-lg font-medium">
+                  1 hour of your life = <span className="text-3xl font-black text-accent ml-2">${calculateHourlyRate().toFixed(2)}</span>
                 </p>
               </motion.div>
             )}
@@ -380,34 +378,34 @@ export default function Onboarding() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="space-y-5"
+            className="space-y-6"
           >
             <div>
-              <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">Age</Label>
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block font-bold">Age</Label>
               <Input
                 type="number"
                 placeholder="28"
                 value={age}
                 onChange={e => setAge(e.target.value)}
-                className="h-14 text-lg bg-muted/50 border-0 rounded-xl"
+                className="h-14 text-lg bg-white border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary shadow-sm transition-all"
               />
             </div>
 
             <div>
-              <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">City</Label>
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block font-bold">City</Label>
               <Input
                 type="text"
                 placeholder="San Francisco"
                 value={city}
                 onChange={e => setCity(e.target.value)}
-                className="h-14 text-lg bg-muted/50 border-0 rounded-xl"
+                className="h-14 text-lg bg-white border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary shadow-sm transition-all"
               />
             </div>
 
             <div>
-              <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">Household Size</Label>
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block font-bold">Household Size</Label>
               <Select value={householdSize} onValueChange={setHouseholdSize}>
-                <SelectTrigger className="h-14 bg-muted/50 border-0 rounded-xl">
+                <SelectTrigger className="h-14 bg-white border-2 border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary shadow-sm transition-all font-medium">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -421,7 +419,7 @@ export default function Onboarding() {
             </div>
 
             <div>
-              <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">Housing Status</Label>
+              <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block font-bold">Housing Status</Label>
               <div className="grid grid-cols-3 gap-3">
                 {[
                   { value: 'rent', label: 'Renting' },
@@ -431,11 +429,10 @@ export default function Onboarding() {
                   <button
                     key={option.value}
                     onClick={() => setHousingStatus(option.value as 'rent' | 'own' | 'family')}
-                    className={`p-4 rounded-xl text-sm font-medium transition-all ${
-                      housingStatus === option.value
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted/50 hover:bg-muted text-foreground'
-                    }`}
+                    className={`p-4 rounded-xl text-sm font-bold transition-all border-2 ${housingStatus === option.value
+                        ? 'bg-primary text-primary-foreground border-primary shadow-neo-sm transform -translate-y-[1px]'
+                        : 'bg-white text-foreground border-border/20 hover:border-primary/50 hover:bg-muted/30'
+                      }`}
                   >
                     {option.label}
                   </button>
@@ -452,53 +449,68 @@ export default function Onboarding() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="space-y-4"
+            className="space-y-6"
           >
-            <p className="text-sm text-muted-foreground">Select 1-3 goals ({selectedGoals.length}/3 selected)</p>
-            <div className="grid grid-cols-2 gap-3">
-              {goalOptions.map(goal => {
+            <div className="flex justify-between items-center">
+              <p className="text-sm text-secondary font-medium">Select 1-3 goals</p>
+              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${selectedGoals.length > 0 ? 'bg-accent-light text-accent' : 'bg-muted text-muted-foreground'}`}>
+                {selectedGoals.length}/3 selected
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {goalOptions.map((goal, index) => {
                 const isSelected = selectedGoals.includes(goal.id);
                 const isDisabled = !isSelected && selectedGoals.length >= 3;
                 const IconComponent = goal.icon;
-                
+                const isCustom = goal.id === 'custom';
+
                 return (
-                  <motion.div key={goal.id} whileHover={{ scale: isDisabled ? 1 : 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <motion.div
+                    key={goal.id}
+                    whileHover={{ scale: isDisabled ? 1 : 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={isCustom ? "col-span-2" : ""}
+                  >
                     <Card
-                      className={`p-4 cursor-pointer transition-all border-0 ${
-                        isSelected 
-                          ? 'bg-primary/20 ring-2 ring-primary' 
-                          : isDisabled 
-                            ? 'opacity-50 cursor-not-allowed bg-muted/50' 
-                            : 'bg-muted/50 hover:bg-muted'
-                      }`}
+                      className={`p-5 cursor-pointer transition-all duration-200 h-full flex flex-col justify-between ${isSelected
+                          ? 'bg-accent-light border-2 border-primary shadow-neo-sm'
+                          : isDisabled
+                            ? 'opacity-50 cursor-not-allowed bg-muted border border-border/10'
+                            : isCustom
+                              ? 'bg-white border-2 border-dashed border-border/30 hover:border-primary hover:shadow-sm'
+                              : 'bg-white border border-border/20 hover:border-primary/50 hover:shadow-sm'
+                        }`}
                       onClick={() => !isDisabled && toggleGoal(goal.id)}
                     >
-                      <div className="flex items-start justify-between mb-2">
-                        <IconComponent className="w-6 h-6" />
-                        {isSelected && (
-                          <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                            <Check className="w-3 h-3 text-primary-foreground" />
-                          </div>
-                        )}
+                      <div>
+                        <div className="flex items-start justify-between mb-3">
+                          <IconComponent className={`w-6 h-6 ${isSelected ? 'text-accent' : 'text-secondary'}`} strokeWidth={2.5} />
+                          {isSelected && (
+                            <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-sm">
+                              <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                            </div>
+                          )}
+                        </div>
+                        <h3 className={`font-bold text-sm mb-1 ${isSelected ? 'text-primary' : 'text-foreground'}`}>{goal.name}</h3>
+                        <p className="text-xs text-secondary leading-tight">{goal.description}</p>
                       </div>
-                      <h3 className="font-semibold text-sm">{goal.name}</h3>
-                      <p className="text-xs text-muted-foreground">{goal.description}</p>
-                      
+
                       {isSelected && (
                         <motion.div
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: 'auto', opacity: 1 }}
-                          className="mt-3"
+                          className="mt-4 pt-3 border-t border-primary/10"
                         >
                           <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+                            <span className="absolute left-0 top-1/2 -translate-y-1/2 text-primary font-bold text-sm">$</span>
                             <Input
                               type="number"
                               placeholder="5,000"
                               value={goalAmounts[goal.id] || ''}
                               onChange={e => setGoalAmounts(prev => ({ ...prev, [goal.id]: e.target.value }))}
                               onClick={e => e.stopPropagation()}
-                              className="pl-7 h-9 text-sm bg-background/50 border-0 rounded-lg"
+                              className="pl-4 h-8 text-sm bg-transparent border-0 border-b-2 border-primary/30 rounded-none px-0 focus-visible:ring-0 focus-visible:border-primary placeholder:text-muted-foreground/50 font-medium"
                             />
                           </div>
                         </motion.div>
@@ -518,23 +530,26 @@ export default function Onboarding() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="space-y-4"
+            className="space-y-5"
           >
-            <div className="grid gap-4">
-              <Card className="p-5 cursor-pointer hover:bg-muted/30 transition-all border-0 bg-muted/50 group">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                    <Building2 className="w-6 h-6 text-primary" />
+            <div className="grid gap-5">
+              <Card className="p-6 cursor-pointer hover:bg-muted/10 transition-all border-2 border-border/10 bg-white hover:border-primary/50 hover:shadow-neo-sm group">
+                <div className="flex items-center gap-5">
+                  <div className="w-14 h-14 rounded-2xl bg-primary/10 border-2 border-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Building2 className="w-7 h-7 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold">Connect with Plaid</h3>
+                    <h3 className="font-bold text-lg mb-1">Connect with Plaid</h3>
                     <p className="text-sm text-muted-foreground">Secure bank-level encryption</p>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                    <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>
               </Card>
 
-              <Card 
-                className="p-5 cursor-pointer hover:bg-muted/30 transition-all border-0 bg-muted/50 group"
+              <Card
+                className="p-6 cursor-pointer hover:bg-muted/10 transition-all border-2 border-border/10 bg-white hover:border-primary/50 hover:shadow-neo-sm group"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <input
@@ -544,20 +559,23 @@ export default function Onboarding() {
                   accept=".csv"
                   className="hidden"
                 />
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center">
-                    <Upload className="w-6 h-6 text-secondary" />
+                <div className="flex items-center gap-5">
+                  <div className="w-14 h-14 rounded-2xl bg-secondary/10 border-2 border-secondary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Upload className="w-7 h-7 text-secondary" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold">Upload Statements</h3>
+                    <h3 className="font-bold text-lg mb-1">Upload Statements</h3>
                     <p className="text-sm text-muted-foreground">CSV or PDF bank statements</p>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                    <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>
               </Card>
 
-              <button 
+              <button
                 onClick={handleNext}
-                className="text-center text-muted-foreground hover:text-foreground text-sm mt-2"
+                className="text-center text-muted-foreground hover:text-primary font-medium text-sm mt-4 underline decoration-2 underline-offset-4 decoration-transparent hover:decoration-primary/30 transition-all"
               >
                 Skip for now — I'll use sample data
               </button>
@@ -571,100 +589,108 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col font-sans">
       {/* Header */}
-      <header className="p-4 lg:px-8 flex items-center justify-between border-b border-border/50">
+      <header className="px-6 py-4 lg:px-12 flex items-center justify-between border-b-2 border-border bg-white z-50 sticky top-0">
         <div className="flex items-center gap-3">
-          <span className="font-display font-bold text-lg">Penny</span>
+          <span className="font-black text-xl tracking-tight">Penny</span>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="hidden sm:flex items-center gap-3">
-            <span className="text-xs uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
               Step {currentStep + 1} of {steps.length}
             </span>
-            <Progress value={progress} className="w-24 h-1.5" />
-            <span className="text-xs font-medium text-primary">{Math.round(progress)}% Complete</span>
+            <Progress value={progress} className="w-32 h-2 rounded-full border border-border/20 bg-muted" />
+            <span className="text-xs font-bold text-primary">{Math.round(progress)}%</span>
           </div>
         </div>
 
-        <button 
+        <button
           onClick={() => navigate('/')}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className="text-sm font-bold text-muted-foreground hover:text-primary transition-colors border-b-2 border-transparent hover:border-accent"
         >
           Save & Exit
         </button>
       </header>
 
       {/* Main Content - Two Column Layout */}
-      <div className="flex-1 flex flex-col lg:flex-row">
-        {/* Left Column - Penny */}
-        <div className="lg:w-1/2 p-6 lg:p-12 flex flex-col justify-center items-center lg:items-start">
-          {/* Speech Bubble */}
-          <motion.div
-            className="relative bg-card rounded-2xl p-5 shadow-card border border-border max-w-md mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            key={currentStep}
-          >
-            <p className="text-foreground font-medium text-lg">
-              <span className="inline-block whitespace-nowrap">
-                {renderAnimatedMessage()}
-              </span>
-            </p>
-          </motion.div>
+      <div className="flex-1 flex flex-col lg:flex-row max-w-6xl mx-auto w-full items-center justify-center p-6 lg:p-0">
 
-          {/* Penny Mascot */}
-          <motion.div 
-            className="relative w-48 h-48 flex items-center justify-center"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          >
-            <motion.img 
-              src={pennyPointing} 
-              alt="Penny" 
-              className="w-full h-full object-contain drop-shadow-xl"
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          </motion.div>
+        {/* Left Column - Penny */}
+        <div className="lg:w-[35%] w-full flex flex-col justify-center items-center lg:items-end lg:pr-12 mb-8 lg:mb-0">
+          <div className="max-w-[320px] w-full flex flex-col items-center">
+            {/* Speech Bubble */}
+            <motion.div
+              className="relative bg-white rounded-2xl p-5 border-2 border-primary shadow-neo-sm mb-5 w-full bubble-tail-bottom z-10"
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              key={currentStep}
+            >
+              <p className="text-foreground font-medium text-lg leading-relaxed">
+                <span className="inline-block">
+                  {renderAnimatedMessage()}
+                </span>
+              </p>
+
+              {/* Bubble Tail pseudo-element simulated with div for better control */}
+              <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-5 h-5 bg-white border-b-2 border-r-2 border-primary rotate-45"></div>
+            </motion.div>
+
+            {/* Penny Mascot */}
+            <motion.div
+              className="relative w-36 h-36 flex items-center justify-center z-20"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            >
+              <div className="absolute inset-0 bg-muted/20 rounded-full scale-90 blur-xl -z-10"></div>
+              <motion.img
+                src={pennyPointing}
+                alt="Penny"
+                className="w-full h-full object-contain drop-shadow-xl"
+                animate={{ y: [0, -4, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              />
+            </motion.div>
+          </div>
         </div>
 
         {/* Right Column - Form Card */}
-        <div className="lg:w-1/2 p-6 lg:p-12 flex items-center justify-center">
-          <Card className="w-full max-w-md p-8 bg-card/80 backdrop-blur border-border/50 rounded-3xl shadow-xl">
+        <div className="lg:w-[65%] w-full flex items-center justify-center lg:justify-start lg:pl-4">
+          <Card className="w-full max-w-xl p-8 lg:p-10 bg-white border-2 border-primary shadow-neo rounded-[2rem]">
             {/* Step Header */}
-            <div className="mb-6">
-              <h1 className="text-2xl font-display font-bold mb-2">{stepTitles[currentStep].title}</h1>
-              <p className="text-muted-foreground">{stepTitles[currentStep].subtitle}</p>
+            <div className="mb-8">
+              <h1 className="text-3xl font-black mb-2 tracking-tight">{stepTitles[currentStep].title}</h1>
+              <p className="text-secondary font-medium text-lg">{stepTitles[currentStep].subtitle}</p>
             </div>
 
             {/* Mobile Progress */}
-            <div className="sm:hidden mb-6">
+            <div className="sm:hidden mb-8">
               <div className="flex items-center justify-between text-xs mb-2">
-                <span className="uppercase tracking-wider text-muted-foreground">
+                <span className="uppercase tracking-wider text-muted-foreground font-bold">
                   Step {currentStep + 1} of {steps.length}
                 </span>
-                <span className="font-medium text-primary">{Math.round(progress)}%</span>
+                <span className="font-bold text-primary">{Math.round(progress)}%</span>
               </div>
-              <Progress value={progress} className="h-1.5" />
+              <Progress value={progress} className="h-2 rounded-full" />
             </div>
 
             {/* Step Content */}
-            <div className="min-h-[300px]">
+            <div className="min-h-[320px]">
               <AnimatePresence mode="wait">
                 {renderStepContent()}
               </AnimatePresence>
             </div>
 
             {/* Navigation */}
-            <div className="mt-8 flex gap-3">
+            <div className="mt-10 flex gap-4">
               {currentStep > 0 && (
                 <Button
                   onClick={handleBack}
                   variant="outline"
-                  className="h-14 px-6 rounded-xl"
+                  className="h-14 px-8 rounded-xl border-2 border-border font-bold hover:bg-muted/50 hover:border-primary/50 text-base"
                 >
                   Back
                 </Button>
@@ -672,7 +698,7 @@ export default function Onboarding() {
               <Button
                 ref={continueButtonRef}
                 onClick={handleNext}
-                className="flex-1 h-14 text-lg font-semibold rounded-xl btn-gradient-primary"
+                className="flex-1 h-14 text-lg font-bold rounded-xl bg-primary text-primary-foreground border-2 border-primary shadow-neo hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-neo-sm transition-all"
                 disabled={
                   (currentStep === 0 && calculateHourlyRate() <= 0) ||
                   (currentStep === 2 && selectedGoals.length === 0)
@@ -683,7 +709,7 @@ export default function Onboarding() {
                 ) : (
                   <>
                     Continue
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                    <ArrowRight className="w-5 h-5 ml-2" strokeWidth={3} />
                   </>
                 )}
               </Button>
