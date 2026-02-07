@@ -69,6 +69,8 @@ class UserRead(schemas.BaseUser[uuid.UUID]):
     level: int
     streak: int
     coins: int
+
+class UserReadWithRelations(UserRead):
     achievements: List[Any] = []
     items: List[Any] = []
 
@@ -105,3 +107,4 @@ class UserUpdate(schemas.BaseUserUpdate):
     coins: Optional[int] = None
 
 UserRead.model_rebuild()
+UserReadWithRelations.model_rebuild()

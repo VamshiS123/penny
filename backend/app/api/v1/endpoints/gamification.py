@@ -62,10 +62,12 @@ async def unlock_achievement(
     
     # Add XP
     current_user.xp += achievement.xp_reward
+    # Calculate new level
+    current_user.level = (current_user.xp // 500) + 1
     db.add(current_user)
     
     await db.commit()
-    return {"message": "Unlocked", "xp_gained": achievement.xp_reward}
+    return {"message": "Unlocked", "xp_gained": achievement.xp_reward, "new_level": current_user.level}
 
 # --- Shop ---
 @router.get("/shop", response_model=List[ShopItem])

@@ -126,7 +126,7 @@ async def upload_csv(
     # Logic: Any merchant appearing in multiple months or explicitly tagged as Housing/Utilities
     from sqlalchemy import func
     statement = select(Transaction.merchant, Transaction.category, func.avg(func.abs(Transaction.amount)).label("avg_amount")) \
-        .where(Transaction.user_id == user_id) \
+        .where(Transaction.user_id == user_id, Transaction.amount < 0) \
         .group_by(Transaction.merchant, Transaction.category) \
         .having(func.count(Transaction.id) >= 1) # Simplified for demo: any merchant becomes a category
     
