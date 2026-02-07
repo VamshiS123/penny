@@ -17,7 +17,7 @@ class Config:
     POSTGRES_PASSWORD: str = os.getenv(
         "POSTGRES_PASSWORD", Constants.DEFAULT_POSTGRES_PASSWORD
     )
-    POSTGRES_DB: str = os.getenv("POSTGRES_LEADS_DB", Constants.DEFAULT_POSTGRES_DB)
+    POSTGRES_DB: str = os.getenv("POSTGRES_DB", Constants.DEFAULT_POSTGRES_DB)
 
     POSTGRES_URL: str = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
