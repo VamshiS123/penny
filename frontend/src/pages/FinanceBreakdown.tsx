@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useFinance } from '@/contexts/FinanceContext';
@@ -13,6 +13,8 @@ export default function FinanceBreakdown() {
   const [step, setStep] = useState(0);
   const [animatingExpense, setAnimatingExpense] = useState(-1);
   const [showTimeTranslation, setShowTimeTranslation] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const lastContentRef = useRef<HTMLDivElement>(null);
 
   const monthlyIncome = data.monthlyIncome;
   const expenses = data.expenses;
@@ -22,6 +24,46 @@ export default function FinanceBreakdown() {
 
   const expenseHours = getTimeEquivalent(totalExpenses);
   const remainingHours = getTimeEquivalent(remaining);
+
+  // Auto-scroll function
+  const scrollToBottom = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Scroll when new content appears
+  useEffect(() => {
+    if (step > 0) {
+      const timer = setTimeout(() => {
+        scrollToBottom();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
+
+  // Scroll when each expense appears
+  useEffect(() => {
+    if (animatingExpense >= 0) {
+      const timer = setTimeout(() => {
+        scrollToBottom();
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [animatingExpense]);
+
+  // Scroll when time translation appears
+  useEffect(() => {
+    if (showTimeTranslation) {
+      const timer = setTimeout(() => {
+        scrollToBottom();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [showTimeTranslation]);
 
   useEffect(() => {
     const timers: NodeJS.Timeout[] = [];
@@ -72,8 +114,11 @@ export default function FinanceBreakdown() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 px-4 py-8">
-      <div className="max-w-lg mx-auto">
+    <div 
+      ref={containerRef}
+      className="h-screen bg-gradient-to-b from-background via-background to-primary/5 px-4 py-8 overflow-y-auto"
+    >
+      <div className="max-w-lg mx-auto pb-8">
         {/* Penny with message */}
         <motion.div
           className="flex items-start gap-4 mb-8"
@@ -244,6 +289,7 @@ export default function FinanceBreakdown() {
         <AnimatePresence>
           {step >= 4 && (
             <motion.div
+              ref={lastContentRef}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}

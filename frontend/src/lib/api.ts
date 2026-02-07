@@ -27,7 +27,35 @@ export async function register(data: any) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("Registration failed");
+  if (!res.ok) {
+    let errorMessage = "Registration failed";
+    try {
+      const errorData = await res.json();
+      console.log("Registration error response:", errorData);
+      // Handle different error response formats
+      if (typeof errorData === 'string') {
+        errorMessage = errorData;
+      } else if (errorData.detail) {
+        // FastAPI validation errors can be a list or a string
+        if (Array.isArray(errorData.detail)) {
+          errorMessage = errorData.detail.map((err: any) => {
+            const field = Array.isArray(err.loc) ? err.loc.slice(1).join('.') : (err.loc?.[1] || 'field');
+            return `${field}: ${err.msg || 'Invalid value'}`;
+          }).join(', ');
+        } else {
+          errorMessage = String(errorData.detail);
+        }
+      } else if (errorData.message) {
+        errorMessage = String(errorData.message);
+      } else {
+        errorMessage = `Registration failed: ${JSON.stringify(errorData)}`;
+      }
+    } catch (e) {
+      console.error("Error parsing error response:", e);
+      errorMessage = `Registration failed: ${res.status} ${res.statusText}`;
+    }
+    throw new Error(errorMessage);
+  }
   return res.json();
 }
 

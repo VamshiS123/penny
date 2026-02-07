@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowRight, Check, Shield, Plane, CreditCard, Car, Home, GraduationCap, Star, Upload, Building2, HelpCircle, ThumbsUp, PiggyBank } from 'lucide-react';
+import { ArrowRight, Check, Shield, Plane, CreditCard, Car, Home, GraduationCap, Star, Upload, Building2, HelpCircle } from 'lucide-react';
 import { PennyMascot, PennyMood } from '@/components/PennyMascot';
 import { LucideIcon } from 'lucide-react';
 import { uploadCSV } from '@/lib/api';
@@ -288,17 +288,12 @@ export default function Onboarding() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-5 bg-primary/10 rounded-2xl border border-primary/20 flex items-center justify-between"
+                className="p-5 bg-primary/10 rounded-2xl border border-primary/20"
               >
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-primary font-semibold mb-1">Live Calculation</p>
-                  <p className="text-foreground">
-                    1 hour of your life = <span className="text-2xl font-bold text-primary">${calculateHourlyRate().toFixed(2)}</span>
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                  <ThumbsUp className="w-5 h-5 text-primary" />
-                </div>
+                <p className="text-xs uppercase tracking-wider text-primary font-semibold mb-1">Live Calculation</p>
+                <p className="text-foreground">
+                  1 hour of your life = <span className="text-2xl font-bold text-primary">${calculateHourlyRate().toFixed(2)}</span>
+                </p>
               </motion.div>
             )}
           </motion.div>
@@ -506,9 +501,6 @@ export default function Onboarding() {
       {/* Header */}
       <header className="p-4 lg:px-8 flex items-center justify-between border-b border-border/50">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-            <PiggyBank className="w-5 h-5 text-primary" />
-          </div>
           <span className="font-display font-bold text-lg">Penny</span>
         </div>
 
@@ -553,9 +545,6 @@ export default function Onboarding() {
           {/* Penny Mascot */}
           <div className="relative">
             <PennyMascot mood={getPennyMood()} size="lg" />
-            <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-lg">
-              <PiggyBank className="w-4 h-4 text-primary-foreground" />
-            </div>
           </div>
         </div>
 

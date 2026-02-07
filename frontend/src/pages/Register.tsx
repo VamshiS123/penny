@@ -25,7 +25,9 @@ export default function Register() {
       toast.success("Account created! You can now log in.");
       navigate('/login?new=true');
     } catch (error) {
-      toast.error("Registration failed. Email might already be in use.");
+      const errorMessage = error instanceof Error ? error.message : "Registration failed. Email might already be in use.";
+      toast.error(errorMessage);
+      console.error("Registration error:", error);
     } finally {
       setLoading(false);
     }
