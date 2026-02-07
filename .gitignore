@@ -297,3 +297,12 @@ cython_debug/
 # Env config
 .env.dev
 .env.prod
+
+# Exclude video project
+video/
+
+# Exclude agent and temp files
+.agent/
+.agents/
+.gemini/
+main/
