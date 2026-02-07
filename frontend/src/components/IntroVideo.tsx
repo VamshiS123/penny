@@ -8,10 +8,16 @@ interface IntroVideoProps {
 export const IntroVideo: React.FC<IntroVideoProps> = ({ onComplete }) => {
     const [isVisible, setIsVisible] = useState(true);
 
+    const handleVideoEnd = () => {
+        setIsVisible(false);
+        // Store video completion in sessionStorage for Landing page to check
+        sessionStorage.setItem('introVideoCompleted', 'true');
+    };
+
     // Fallback timeout in case video doesn't play or end event is missed
     useEffect(() => {
         const timer = setTimeout(() => {
-            setIsVisible(false);
+            handleVideoEnd();
         }, 7500); // 7s video + buffer
 
         return () => clearTimeout(timer);
@@ -32,7 +38,7 @@ export const IntroVideo: React.FC<IntroVideoProps> = ({ onComplete }) => {
                         muted
                         playsInline
                         className="w-full h-full object-cover"
-                        onEnded={() => setIsVisible(false)}
+                        onEnded={handleVideoEnd}
                         style={{ objectFit: 'cover' }}
                     />
                 </motion.div>
