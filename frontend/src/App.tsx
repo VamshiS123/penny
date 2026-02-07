@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -22,10 +23,11 @@ import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
+import { IntroVideo } from "./components/IntroVideo";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useFinance();
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
@@ -37,38 +39,43 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const App = () => (
-  <FinanceProvider>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        
-        <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-        <Route path="/loading" element={<ProtectedRoute><LoadingAnalysis /></ProtectedRoute>} />
-        <Route path="/breakdown" element={<ProtectedRoute><FinanceBreakdown /></ProtectedRoute>} />
-        
-        <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/goals" element={<Goals />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/transactions" element={<Transactions />} />
-          <Route path="/budgets" element={<Budgets />} />
-          <Route path="/accounts" element={<Accounts />} />
-          <Route path="/time-calendar" element={<TimeCalendar />} />
-          <Route path="/future-you" element={<FutureYou />} />
-          <Route path="/financial-twin" element={<FinancialTwin />} />
-          <Route path="/subscriptions" element={<Subscriptions />} />
-          <Route path="/settings" element={<Settings />} />
-        </Route>
-        
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </TooltipProvider>
-  </FinanceProvider>
-);
+const App = () => {
+  const [showIntro, setShowIntro] = useState(true);
+
+  return (
+    <FinanceProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        {showIntro && <IntroVideo onComplete={() => setShowIntro(false)} />}
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+          <Route path="/loading" element={<ProtectedRoute><LoadingAnalysis /></ProtectedRoute>} />
+          <Route path="/breakdown" element={<ProtectedRoute><FinanceBreakdown /></ProtectedRoute>} />
+
+          <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/goals" element={<Goals />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/transactions" element={<Transactions />} />
+            <Route path="/budgets" element={<Budgets />} />
+            <Route path="/accounts" element={<Accounts />} />
+            <Route path="/time-calendar" element={<TimeCalendar />} />
+            <Route path="/future-you" element={<FutureYou />} />
+            <Route path="/financial-twin" element={<FinancialTwin />} />
+            <Route path="/subscriptions" element={<Subscriptions />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </TooltipProvider>
+    </FinanceProvider>
+  );
+};
 
 export default App;

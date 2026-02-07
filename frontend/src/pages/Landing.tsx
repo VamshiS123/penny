@@ -4,30 +4,30 @@ import { PennyMascot } from '@/components/PennyMascot';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Clock, Calendar, Search, TrendingUp, Users, 
+import {
+  Clock, Calendar, Search, TrendingUp, Users,
   Landmark, Upload, CheckCircle, Shield, Lock,
   Sparkles, Globe, Share2, MessageSquare, Heart
 } from 'lucide-react';
 
 const features = [
-  { 
-    icon: Calendar, 
+  {
+    icon: Calendar,
     title: 'Money Calendar',
     description: 'A visual view of when bills are due and money is spent. Know exactly which days belong to you and which belong to your creditors.'
   },
-  { 
-    icon: Search, 
+  {
+    icon: Search,
     title: 'Subscription Detective',
     description: 'Find and cancel hidden subscriptions draining your wallet. Our AI hunts down the "zombie" payments you forgot years ago.'
   },
-  { 
-    icon: TrendingUp, 
+  {
+    icon: TrendingUp,
     title: 'Future You',
     description: 'Projections of wealth based on current spending habits. See how skipping that daily latte translates into retirement years.'
   },
-  { 
-    icon: Users, 
+  {
+    icon: Users,
     title: 'Financial Twin',
     description: 'AI-driven comparisons help you optimize your budget. See how people with similar goals and income are saving.'
   },
@@ -45,18 +45,15 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-primary-foreground" />
-              </div>
               <span className="text-xl font-display font-bold">Penny</span>
             </div>
-            
+
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
               <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
               <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Button variant="ghost" className="hidden sm:inline-flex" onClick={() => navigate('/login')}>Login</Button>
               <Button onClick={() => navigate('/register')} className="btn-gradient-primary">
@@ -81,21 +78,21 @@ export default function Landing() {
                 <CheckCircle className="w-3.5 h-3.5 mr-1.5" />
                 Now with AI-Powered Forecasts
               </Badge>
-              
+
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-extrabold leading-tight mb-6">
                 See where your{' '}
                 <span className="gradient-text">time</span>
                 {' '}really goes
               </h1>
-              
+
               <p className="text-lg text-muted-foreground mb-8 max-w-lg">
-                Penny is the AI budget companion that translates your spending into hours worked. 
+                Penny is the AI budget companion that translates your spending into hours worked.
                 Regain control of your finances and your time with a simple, smart dashboard.
               </p>
-              
+
               <div className="flex flex-wrap gap-4 mb-8">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="btn-gradient-primary gap-2"
                   onClick={() => navigate('/register')}
                 >
@@ -107,13 +104,13 @@ export default function Landing() {
                   Upload CSV
                 </Button>
               </div>
-              
+
               {/* Social Proof */}
               <div className="flex items-center gap-3">
                 <div className="flex -space-x-2">
                   {[1, 2, 3].map((i) => (
-                    <div 
-                      key={i} 
+                    <div
+                      key={i}
                       className="w-8 h-8 rounded-full bg-muted border-2 border-background flex items-center justify-center"
                     >
                       <span className="text-xs font-medium">{String.fromCharCode(64 + i)}</span>
@@ -137,7 +134,7 @@ export default function Landing() {
                 <div className="flex justify-center mb-4">
                   <PennyMascot mood="waving" size="lg" />
                 </div>
-                
+
                 <div className="text-center mb-4">
                   <Badge variant="outline" className="text-xs mb-3">
                     <Sparkles className="w-3 h-3 mr-1 text-primary" />
@@ -147,7 +144,7 @@ export default function Landing() {
                     "That coffee cost you 15 minutes of work, Dave. Is it worth the caffeine rush?"
                   </p>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
                   <div className="text-center">
                     <p className="text-xs text-muted-foreground mb-1">Coffee Spend</p>
@@ -177,7 +174,7 @@ export default function Landing() {
               Features designed for your future self
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Stop looking at numbers and start looking at freedom. Penny helps you visualize your 
+              Stop looking at numbers and start looking at freedom. Penny helps you visualize your
               financial health through the lens of your most valuable asset: time.
             </p>
           </motion.div>
@@ -241,21 +238,21 @@ export default function Landing() {
               Ready to see your time differently?
             </h2>
             <p className="text-primary-foreground/80 max-w-xl mx-auto mb-8">
-              Join thousands of users converting their spending into freedom. It only takes 
+              Join thousands of users converting their spending into freedom. It only takes
               60 seconds to link your bank and start saving hours every day.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 variant="secondary"
                 className="font-semibold"
                 onClick={() => navigate('/register')}
               >
                 Start Your Free Trial
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
+              <Button
+                size="lg"
+                variant="outline"
                 className="bg-transparent text-primary-foreground border-primary-foreground/30 hover:bg-primary-foreground/10"
               >
                 Watch Demo
@@ -292,7 +289,7 @@ export default function Landing() {
                 </Button>
               </div>
             </div>
-            
+
             {/* Product */}
             <div>
               <h4 className="font-semibold mb-4">Product</h4>
@@ -302,7 +299,7 @@ export default function Landing() {
                 <li><a href="#" className="hover:text-background transition-colors">Security</a></li>
               </ul>
             </div>
-            
+
             {/* Company */}
             <div>
               <h4 className="font-semibold mb-4">Company</h4>
@@ -312,7 +309,7 @@ export default function Landing() {
                 <li><a href="#" className="hover:text-background transition-colors">Contact</a></li>
               </ul>
             </div>
-            
+
             {/* Legal */}
             <div>
               <h4 className="font-semibold mb-4">Legal</h4>
@@ -323,7 +320,7 @@ export default function Landing() {
               </ul>
             </div>
           </div>
-          
+
           <div className="pt-8 border-t border-muted/20 flex flex-col sm:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted">
               © 2024 Penny AI Inc. All rights reserved.
