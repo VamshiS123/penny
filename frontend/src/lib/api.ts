@@ -268,10 +268,43 @@ export async function purchaseItem(id: string) {
 }
 
 export async function equipItem(id: string) {
+
   const res = await fetch(`${API_URL}/gamification/shop/${id}/equip`, {
+
     method: "POST",
+
     headers: { ...getAuthHeader() },
+
   });
+
   if (!res.ok) throw new Error("Failed to equip item");
+
   return res.json();
+
+}
+
+
+
+export async function chatWithPenny(message: string, history: { role: string, content: string }[] = []) {
+
+  const res = await fetch(`${API_URL}/chat/`, {
+
+    method: "POST",
+
+    headers: { 
+
+        "Content-Type": "application/json",
+
+        ...getAuthHeader()
+
+    },
+
+    body: JSON.stringify({ message, history }),
+
+  });
+
+  if (!res.ok) throw new Error("Failed to chat with Penny");
+
+  return res.json();
+
 }

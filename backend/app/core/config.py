@@ -21,6 +21,8 @@ class Config:
 
     POSTGRES_URL: str = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
+    OPENROUTER_API_KEY: str = os.getenv("OPENROUTER_API_KEY", "")
+
 
 logger.info("Loading application configuration...")
 logger.info(f"DEBUG mode: {Config.DEBUG}")

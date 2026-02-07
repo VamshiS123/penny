@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import users, expenses, goals, transactions, gamification, accounts, uploads
+from app.api.v1.endpoints import users, expenses, goals, transactions, gamification, accounts, uploads, chat
 from app.core.users import auth_backend, fastapi_users
 from app.models.user import UserRead, UserCreate
 
@@ -22,3 +22,4 @@ api_router.include_router(goals.router, prefix="/goals", tags=["goals"])
 api_router.include_router(transactions.router, prefix="/transactions", tags=["transactions"])
 api_router.include_router(gamification.router, prefix="/gamification", tags=["gamification"])
 api_router.include_router(accounts.router, prefix="/accounts", tags=["accounts"])
+api_router.include_router(chat.router, prefix="/chat", tags=["chat"])

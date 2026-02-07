@@ -5,6 +5,7 @@ import { X, Lightbulb, TrendingUp, AlertTriangle, Send, Sparkles } from 'lucide-
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollVelocity } from '@/components/ui/scroll-velocity';
+import { chatWithPenny } from '@/lib/api';
 import pennyQuestions from '@/assets/penny-questions.png';
 
 const insights = [
@@ -27,6 +28,9 @@ const insights = [
     color: 'text-primary bg-primary/10',
   },
 ];
+
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Message {
   id: string;
@@ -75,25 +79,29 @@ export function PennyFAB() {
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate Penny's response (in a real app, this would call an AI API)
-    setTimeout(() => {
-      const responses = [
-        "That's a great question! Based on your spending patterns, I'd suggest setting aside about 20% of your income for savings. Would you like me to help you create a savings plan?",
-        "I noticed you've been doing really well with your budget this month! Keep it up! 🎉 Is there anything specific you'd like to work on?",
-        "Looking at your transactions, I see some opportunities to save. Want me to analyze your subscriptions for any you might not be using?",
-        "Great thinking! Your financial twin comparison shows you're in the top 30% for savings. Let me know if you want tips to climb even higher!",
-      ];
-
+    try {
+      const result = await chatWithPenny(userMessage.content, messages);
+      
       const pennyResponse: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: responses[Math.floor(Math.random() * responses.length)],
+        content: result.response,
         timestamp: new Date(),
       };
 
       setMessages(prev => [...prev, pennyResponse]);
+    } catch (error) {
+      console.error("Error chatting with Penny:", error);
+      const errorResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "I'm sorry, I'm having a little trouble connecting right now. Can we try again in a bit?",
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -225,7 +233,11 @@ export function PennyFAB() {
                           : 'bg-muted rounded-bl-md'
                       }`}
                     >
-                      <p className="text-sm">{message.content}</p>
+                      <div className="text-sm prose prose-sm dark:prose-invert prose-p:leading-relaxed prose-pre:bg-muted-foreground/10">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {message.content}
+                        </ReactMarkdown>
+                      </div>
                     </div>
                   </motion.div>
                 ))}
