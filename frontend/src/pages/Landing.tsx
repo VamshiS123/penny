@@ -9,7 +9,7 @@ import { PennyAICard } from '@/components/landing/PennyAICard';
 import { PennyMascot } from '@/components/PennyMascot';
 import {
   Calendar, Search, TrendingUp, Users,
-  Landmark, Upload, CheckCircle, Shield, Lock,
+  Landmark, Upload, CheckCircle, Shield,
   Sparkles, Globe, Share2, MessageSquare, Heart,
   Chrome, Bell, MousePointerClick, AlertTriangle, Clock
 } from 'lucide-react';
@@ -199,10 +199,11 @@ export default function Landing() {
             <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight">
               Features designed for your <span className="text-accent underline decoration-4 underline-offset-4 decoration-primary/20">future self</span>
             </h2>
-            <p className="text-xl text-secondary max-w-2xl mx-auto leading-relaxed">
-              Stop looking at numbers and start looking at freedom. Penny helps you visualize your
-              financial health through the lens of your most valuable asset: time.
-            </p>
+            <div className="text-xl text-secondary max-w-4xl mx-auto leading-relaxed">
+              <p className="text-center">Stop looking at numbers and start looking at freedom.</p>
+              <p className="text-center whitespace-nowrap">Penny helps you visualize your financial health through the lens of your most valuable asset:</p>
+              <p className="text-center text-accent font-bold">time</p>
+            </div>
           </motion.div>
 
           <div className="overflow-hidden">
@@ -332,17 +333,6 @@ export default function Landing() {
               ))}
             </Marquee>
           </div>
-          <div className="flex justify-center items-center gap-6 text-sm font-bold text-secondary">
-            <div className="flex items-center gap-2">
-              <Lock className="w-4 h-4 text-primary" />
-              AES-256 Bank Grade Encryption
-            </div>
-            <span className="text-primary/20">•</span>
-            <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-primary" />
-              SOC2 Type II Compliant
-            </div>
-          </div>
         </div>
       </section>
 
@@ -358,11 +348,6 @@ export default function Landing() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            {/* Decorative Penny */}
-            <div className="absolute -top-16 -right-12 hidden lg:block opacity-20 rotate-12">
-              <PennyMascot mood="celebrating" size="xl" animate={false} />
-            </div>
-
             <h2 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tight">
               Ready to see your <span className="text-accent relative inline-block">
                 time
