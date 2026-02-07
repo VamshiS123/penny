@@ -1,7 +1,8 @@
 import uuid
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from pydantic import BaseModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.api.deps import get_db
@@ -10,6 +11,22 @@ from app.crud import transaction as crud_transaction
 from app.models.transaction import Transaction, TransactionCreate, TransactionUpdate
 from app.models.user import User
 from app.services.receipt_analysis import analyze_receipt_image, ReceiptItem, ReceiptAnalysisResponse
+from app.services.cart_analysis import analyze_cart_screenshot, CartItem, CartAnalysisResponse
+
+
+class CartConfirmItem(BaseModel):
+    """Item to confirm for budget tracking."""
+    merchant: str
+    category: str
+    amount: float
+    item_name: str
+
+
+class CartConfirmRequest(BaseModel):
+    """Request body for confirming cart purchase."""
+    items: List[CartConfirmItem]
+    date: str
+
 
 router = APIRouter()
 
@@ -95,3 +112,74 @@ async def delete_transaction(
         raise HTTPException(status_code=400, detail="Not enough permissions")
     transaction = await crud_transaction.remove(db, id=id)
     return transaction
+
+
+@router.post("/analyze-cart", response_model=CartAnalysisResponse)
+async def analyze_cart(
+    file: UploadFile = File(...),
+    current_user: User = Depends(current_active_user),
+) -> CartAnalysisResponse:
+    """
+    Analyze a shopping cart screenshot and return cart contents.
+    Used by the Chrome extension for checkout interception.
+    """
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File must be an image.")
+    
+    contents = await file.read()
+    
+    # Calculate hourly rate for time cost
+    hourly_rate = None
+    if current_user.hourly_rate:
+        hourly_rate = current_user.hourly_rate
+    elif current_user.annual_salary:
+        hourly_rate = current_user.annual_salary / 2080
+    
+    try:
+        response = await analyze_cart_screenshot(contents, hourly_rate=hourly_rate)
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to analyze cart: {str(e)}")
+
+
+@router.post("/confirm-cart", response_model=List[Transaction])
+async def confirm_cart(
+    *,
+    db: AsyncSession = Depends(get_db),
+    request: CartConfirmRequest,
+    current_user: User = Depends(current_active_user),
+) -> List[Transaction]:
+    """
+    Confirm cart items and track them as transactions.
+    Called when user confirms purchase in Chrome extension.
+    """
+    # Map categories to icons
+    category_icons = {
+        "Shopping": "🛍️",
+        "Groceries": "🛒",
+        "Food & Drink": "🍔",
+        "Entertainment": "🎬",
+        "Health": "💊",
+        "Utilities": "💡",
+        "Transport": "🚗",
+    }
+    
+    created_transactions = []
+    
+    for item in request.items:
+        icon = category_icons.get(item.category, "💳")
+        
+        transaction_in = TransactionCreate(
+            merchant=f"{item.merchant}: {item.item_name[:40]}",  # Include item name in merchant field
+            amount=-abs(item.amount),  # Expenses are negative
+            category=item.category,
+            date=request.date,
+            icon=icon,
+        )
+        transaction = await crud_transaction.create(
+            db, obj_in=transaction_in, user_id=current_user.id
+        )
+        created_transactions.append(transaction)
+    
+    return created_transactions
+
