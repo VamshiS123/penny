@@ -33,20 +33,15 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan, title="Penny Backend", version="1.0.0")
 
-logger.trace("Checking DEBUG mode for CORS middleware configuration.")
-if Config.DEBUG:
-    logger.info("DEBUG mode is enabled. Adding CORS middleware for development.")
-    logger.trace(f"Allowed origins: {['http://frontend:5173', 'http://frontend:8000', 'http://localhost:5173']}")
-    # CORS Middleware for development
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-else:
-    logger.info("DEBUG mode is disabled. Skipping CORS middleware.")
+logger.info("Adding CORS middleware.")
+# CORS Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Exception handler for validation errors
 @app.exception_handler(RequestValidationError)
