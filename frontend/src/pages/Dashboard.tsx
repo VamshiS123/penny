@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { useFinance } from '@/contexts/FinanceContext';
 import { Card } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { 
   TrendingUp, Search, Bell, Flame, Plus, MoreVertical,
   CheckCircle, AlertTriangle, Lightbulb, Clock
@@ -9,37 +8,44 @@ import {
 import { PennyMascot } from '@/components/PennyMascot';
 import { useState } from 'react';
 
-// Mock accounts
-const accounts = [
-  { id: '1', name: 'Chase Checking', initial: 'C', balance: 4250.00, color: 'bg-blue-500' },
-  { id: '2', name: 'Amex Gold', initial: 'A', balance: 1120.50, color: 'bg-amber-500' },
-  { id: '3', name: 'Robinhood', initial: 'R', balance: 24800.00, color: 'bg-green-500' },
-];
-
-// Mock transactions
-const recentTransactions = [
-  { id: '1', date: 'Oct 24', merchant: 'Uber Eats', initial: 'UB', amount: -42.15, category: 'DINING OUT', categoryColor: 'bg-orange-500' },
-  { id: '2', date: 'Oct 23', merchant: 'Amazon.com', initial: 'AM', amount: -128.50, category: 'SHOPPING', categoryColor: 'bg-yellow-500' },
-  { id: '3', date: 'Oct 23', merchant: 'Phoenix Tech Corp', initial: 'PX', amount: 4200.00, category: 'INCOME', categoryColor: 'bg-green-500' },
-  { id: '4', date: 'Oct 22', merchant: 'Netflix', initial: 'NF', amount: -17.99, category: 'SUBSCRIPTION', categoryColor: 'bg-purple-500' },
-];
-
-const upcomingBills = [
-  { id: '1', month: 'OCT', day: '28', name: 'Rent/Mortgage', amount: 2450.00, status: 'Autopay: On', statusType: 'scheduled' },
-  { id: '2', month: 'OCT', day: '30', name: 'Electricity Bill', amount: 124.80, status: 'Manual payment', statusType: 'pay-now' },
-  { id: '3', month: 'NOV', day: '02', name: 'Gym Membership', amount: 45.00, status: 'Autopay: On', statusType: 'scheduled' },
-];
-
 export default function Dashboard() {
   const { data } = useFinance();
   const [timeRange, setTimeRange] = useState<'1M' | '6M' | '1Y'>('6M');
   
-  const netWorth = 142500.00;
-  const netWorthChange = 2.4;
-  const totalSpent = 3247.82;
-  const monthlyBudget = 4500;
+  const accounts = data.accounts || [];
+  const transactions = data.transactions || [];
+  const expenses = data.expenses || [];
+
+  const netWorth = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+  const netWorthChange = 2.4; // Placeholder or calculate if history available
+  
+  const totalSpent = transactions
+    .filter(t => t.amount < 0 && new Date(t.date).getUTCMonth() === new Date().getUTCMonth())
+    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+  const monthlyBudget = data.monthlyIncome || 4500;
   const hourlyRate = data.calculatedHourlyRate || 27.88;
-  const hoursOfWork = Math.round(totalSpent / hourlyRate);
+  const hoursOfWork = Math.round(totalSpent / (hourlyRate || 1));
+
+  const userName = data.fullName || (data.email ? data.email.split('@')[0] : 'User');
+
+  // Recent transactions
+  const recentTransactions = transactions.slice(0, 5).map(t => ({
+      ...t,
+      categoryColor: 'bg-gray-500', // Default or map category to color
+      initial: t.merchant.substring(0, 2).toUpperCase()
+  }));
+
+  // Upcoming bills (simulated from fixed expenses)
+  const upcomingBills = expenses.filter(e => e.isFixed).slice(0, 3).map((e, i) => ({
+      id: e.id,
+      month: new Date().toLocaleString('default', { month: 'short' }).toUpperCase(),
+      day: (28 + i).toString(), // Fake day
+      name: e.name,
+      amount: e.amount,
+      status: 'Autopay: On',
+      statusType: 'scheduled'
+  }));
 
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto">
@@ -61,17 +67,17 @@ export default function Dashboard() {
 
         {/* Level indicator */}
         <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
-          <span>LEVEL 4</span>
+          <span>LEVEL {data.level}</span>
           <div className="w-24 h-2 bg-muted border border-border">
-            <div className="h-full bg-primary" style={{ width: '65%' }} />
+            <div className="h-full bg-primary" style={{ width: `${(data.xp % 500) / 5}%` }} />
           </div>
-          <span>350 XP LEFT</span>
+          <span>{500 - (data.xp % 500)} XP LEFT</span>
         </div>
 
         {/* Streak */}
         <div className="flex items-center gap-2 px-3 py-1.5 bg-secondary text-secondary-foreground font-semibold text-sm">
           <Flame className="w-4 h-4" />
-          <span>12 Day Streak</span>
+          <span>{data.streak} Day Streak</span>
         </div>
 
         {/* Notifications */}
@@ -161,7 +167,7 @@ export default function Dashboard() {
               <PennyMascot mood="waving" size="md" />
               <div>
                 <h2 className="text-xl font-bold">Penny's Daily Briefing</h2>
-                <p className="text-muted-foreground">Good morning, Alex. You're doing great!</p>
+                <p className="text-muted-foreground">Good morning, {userName}. You're doing great!</p>
               </div>
             </div>
 
@@ -278,7 +284,9 @@ export default function Dashboard() {
                 <tbody>
                   {recentTransactions.map((tx) => (
                     <tr key={tx.id} className="border-b border-border last:border-0">
-                      <td className="py-4 text-muted-foreground">{tx.date}</td>
+                      <td className="py-4 text-muted-foreground">
+                        {tx.date instanceof Date ? tx.date.toLocaleDateString() : tx.date}
+                      </td>
                       <td className="py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-muted border border-border flex items-center justify-center text-xs font-bold">

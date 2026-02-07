@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { 
   Home, CreditCard, PieChart, Building2, Calendar, 
   Sparkles, Users, Search, Target, ShoppingBag, Settings,
-  ChevronLeft, ChevronRight, Flame
+  ChevronLeft, ChevronRight, Flame, LogOut
 } from 'lucide-react';
 import { useFinance } from '@/contexts/FinanceContext';
 import pennyIcon from '@/assets/penny-2.png';
@@ -35,7 +35,7 @@ const otherNavItems = [
 
 export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   const location = useLocation();
-  const { data } = useFinance();
+  const { data, logout } = useFinance();
 
   const NavItem = ({ icon: Icon, label, path, badge }: { icon: any; label: string; path: string; badge?: string }) => {
     const isActive = location.pathname === path;
@@ -153,6 +153,14 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
                 <span className="font-medium text-sidebar-foreground">{data.streak} day streak</span>
               </div>
             </div>
+
+            <button
+              onClick={logout}
+              className="flex items-center gap-3 px-3 py-2.5 w-full rounded-xl text-destructive hover:bg-destructive/10 transition-all mt-2"
+            >
+              <LogOut className="w-5 h-5 flex-shrink-0" />
+              <span className="font-medium text-sm">Logout</span>
+            </button>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-2">
@@ -163,6 +171,12 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
               <Flame className="w-4 h-4 text-secondary" />
               <span className="text-xs text-sidebar-foreground">{data.streak}</span>
             </div>
+            <button
+              onClick={logout}
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-destructive hover:bg-destructive/10 transition-all mt-2"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
           </div>
         )}
       </div>

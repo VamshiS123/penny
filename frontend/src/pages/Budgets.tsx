@@ -1,32 +1,43 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Plus, TrendingUp, AlertTriangle, Check,
-  Utensils, Car, Gamepad2, ShoppingBag, Zap, Heart
+  TrendingUp, AlertTriangle, Check,
+  Utensils, Plus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { LucideIcon } from 'lucide-react';
+import { useFinance } from '@/contexts/FinanceContext';
 
 interface Budget {
   id: string;
   name: string;
-  icon: LucideIcon;
+  icon: any;
   allocated: number;
   spent: number;
   color: string;
 }
 
-const mockBudgets: Budget[] = [
-  { id: '1', name: 'Food & Dining', icon: Utensils, allocated: 600, spent: 423, color: 'bg-orange-500' },
-  { id: '2', name: 'Transportation', icon: Car, allocated: 300, spent: 287, color: 'bg-blue-500' },
-  { id: '3', name: 'Entertainment', icon: Gamepad2, allocated: 200, spent: 156, color: 'bg-purple-500' },
-  { id: '4', name: 'Shopping', icon: ShoppingBag, allocated: 400, spent: 512, color: 'bg-pink-500' },
-  { id: '5', name: 'Utilities', icon: Zap, allocated: 250, spent: 198, color: 'bg-yellow-500' },
-  { id: '6', name: 'Health', icon: Heart, allocated: 150, spent: 45, color: 'bg-green-500' },
-];
-
 export default function Budgets() {
-  const [budgets] = useState<Budget[]>(mockBudgets);
+  const { data } = useFinance();
+  
+  // Calculate budgets based on expenses (allocation) and transactions (spending)
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+
+  const spendingByCategory: Record<string, number> = {};
+  data.transactions.forEach(t => {
+      const d = new Date(t.date);
+      if (d.getUTCMonth() === currentMonth && d.getUTCFullYear() === currentYear && t.type === 'expense') {
+          spendingByCategory[t.category] = (spendingByCategory[t.category] || 0) + Math.abs(t.amount);
+      }
+  });
+
+  const budgets: Budget[] = data.expenses.map(e => ({
+      id: e.id,
+      name: e.name,
+      icon: e.icon || Utensils,
+      allocated: e.amount,
+      spent: Math.round(spendingByCategory[e.category] || 0),
+      color: 'bg-primary'
+  }));
 
   const totalAllocated = budgets.reduce((sum, b) => sum + b.allocated, 0);
   const totalSpent = budgets.reduce((sum, b) => sum + b.spent, 0);

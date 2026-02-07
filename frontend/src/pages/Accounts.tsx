@@ -1,27 +1,9 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, CreditCard, Building2, Wallet, PiggyBank, TrendingUp, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useFinance, Account } from '@/contexts/FinanceContext';
 
-interface Account {
-  id: string;
-  name: string;
-  type: 'checking' | 'savings' | 'credit' | 'investment';
-  balance: number;
-  institution: string;
-  lastFour: string;
-  change: number;
-}
-
-const mockAccounts: Account[] = [
-  { id: '1', name: 'Main Checking', type: 'checking', balance: 4523.67, institution: 'Chase', lastFour: '4521', change: 234.50 },
-  { id: '2', name: 'High Yield Savings', type: 'savings', balance: 12850.00, institution: 'Ally', lastFour: '8832', change: 125.00 },
-  { id: '3', name: 'Travel Rewards', type: 'credit', balance: -1234.56, institution: 'Amex', lastFour: '3001', change: -456.78 },
-  { id: '4', name: 'Emergency Fund', type: 'savings', balance: 8500.00, institution: 'Marcus', lastFour: '6654', change: 50.00 },
-  { id: '5', name: 'Investment Portfolio', type: 'investment', balance: 25670.89, institution: 'Fidelity', lastFour: '9912', change: 1234.56 },
-];
-
-const accountIcons = {
+const accountIcons: Record<string, any> = {
   checking: Building2,
   savings: PiggyBank,
   credit: CreditCard,
@@ -29,7 +11,8 @@ const accountIcons = {
 };
 
 export default function Accounts() {
-  const [accounts] = useState<Account[]>(mockAccounts);
+  const { data } = useFinance();
+  const accounts = data.accounts || [];
 
   const totalAssets = accounts
     .filter(a => a.balance > 0)
@@ -97,7 +80,7 @@ export default function Accounts() {
             {accounts
               .filter(a => a.type === 'checking' || a.type === 'savings')
               .map((account, index) => {
-                const Icon = accountIcons[account.type];
+                const Icon = accountIcons[account.type] || Building2;
                 return (
                   <motion.div
                     key={account.id}
@@ -113,23 +96,13 @@ export default function Accounts() {
                       <div className="flex-1">
                         <h3 className="font-bold">{account.name}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {account.institution} ••••{account.lastFour}
+                          {account.initial} ••••
                         </p>
                       </div>
                       <div className="text-right">
                         <p className="font-bold text-lg">
                           ${account.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                         </p>
-                        <div className="flex items-center justify-end gap-1">
-                          {account.change >= 0 ? (
-                            <ArrowUpRight className="w-3 h-3" />
-                          ) : (
-                            <ArrowDownRight className="w-3 h-3" />
-                          )}
-                          <span className="text-xs text-muted-foreground">
-                            ${Math.abs(account.change).toFixed(2)}
-                          </span>
-                        </div>
                       </div>
                     </div>
                   </motion.div>
@@ -146,10 +119,10 @@ export default function Accounts() {
           </h2>
           <div className="space-y-3">
             {accounts
-              .filter(a => a.type === 'credit' || a.type === 'investment')
+              .filter(a => a.type !== 'checking' && a.type !== 'savings')
               .map((account, index) => {
-                const Icon = accountIcons[account.type];
-                const isCredit = account.type === 'credit';
+                const Icon = accountIcons[account.type] || CreditCard;
+                const isCredit = account.type === 'credit' || account.balance < 0;
                 return (
                   <motion.div
                     key={account.id}
@@ -165,23 +138,13 @@ export default function Accounts() {
                       <div className="flex-1">
                         <h3 className="font-bold">{account.name}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {account.institution} ••••{account.lastFour}
+                          {account.initial} ••••
                         </p>
                       </div>
                       <div className="text-right">
                         <p className={`font-bold text-lg ${isCredit ? 'text-muted-foreground' : ''}`}>
-                          {isCredit ? '-' : ''}${Math.abs(account.balance).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                          {isCredit && account.balance > 0 ? '-' : ''}${Math.abs(account.balance).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                         </p>
-                        <div className="flex items-center justify-end gap-1">
-                          {account.change >= 0 ? (
-                            <ArrowUpRight className="w-3 h-3" />
-                          ) : (
-                            <ArrowDownRight className="w-3 h-3" />
-                          )}
-                          <span className="text-xs text-muted-foreground">
-                            ${Math.abs(account.change).toFixed(2)}
-                          </span>
-                        </div>
                       </div>
                     </div>
                   </motion.div>

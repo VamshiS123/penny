@@ -20,17 +20,6 @@ interface BadgeData {
   unlocked: boolean;
 }
 
-const allBadges: BadgeData[] = [
-  { id: '1', name: 'First Steps', description: 'Complete onboarding', icon: Egg, unlocked: true },
-  { id: '2', name: 'Week Warrior', description: '7 day streak', icon: Flame, unlocked: true },
-  { id: '3', name: 'First $100', description: 'Save your first $100', icon: Coins, unlocked: false },
-  { id: '4', name: 'Ghost Buster', description: 'Cancel first subscription', icon: Ghost, unlocked: false },
-  { id: '5', name: 'Goal Getter', description: 'Complete your first goal', icon: Target, unlocked: false },
-  { id: '6', name: 'Budget Master', description: 'Stay under budget for a month', icon: Crown, unlocked: false },
-  { id: '7', name: 'Time Lord', description: 'Check time calendar 30 times', icon: Clock, unlocked: false },
-  { id: '8', name: 'Social Saver', description: 'Compare with 10 Financial Twins', icon: Users, unlocked: false },
-];
-
 const challenges = [
   { id: '1', name: 'Stay under $30 today', progress: 60, xpReward: 25, active: true },
   { id: '2', name: 'No impulse purchases this week', progress: 43, xpReward: 100, active: true },
@@ -43,34 +32,25 @@ const recentXP = [
   { action: 'Completed challenge', xp: 50, time: '2 days ago' },
 ];
 
-interface GoalData {
-  id: string;
-  name: string;
-  icon: LucideIcon;
-  targetAmount: number;
-  savedAmount: number;
-  monthlyContribution: number;
-  projectedDate: string;
-}
-
-// Sample goals for demo
-const demoGoals: GoalData[] = [
-  { id: 'emergency', name: 'Emergency Fund', icon: Shield, targetAmount: 5000, savedAmount: 2450, monthlyContribution: 200, projectedDate: 'Aug 2026' },
-  { id: 'vacation', name: 'Vacation', icon: Plane, targetAmount: 3000, savedAmount: 1200, monthlyContribution: 150, projectedDate: 'Dec 2026' },
-  { id: 'car', name: 'New Car', icon: Car, targetAmount: 15000, savedAmount: 4500, monthlyContribution: 400, projectedDate: 'Mar 2028' },
-];
-
 export default function Goals() {
   const { data } = useFinance();
-  const goals = data.selectedGoals.length > 0 ? data.selectedGoals.map(g => ({
+  
+  const goals = data.selectedGoals.map(g => ({
     ...g,
-    icon: Shield, // Default icon for user goals
     monthlyContribution: 0,
-    projectedDate: ''
-  })) : demoGoals;
+    projectedDate: 'TBD'
+  }));
   
   const xpForNextLevel = 500;
   const currentLevelXP = data.xp % xpForNextLevel;
+
+  const badges: BadgeData[] = data.achievements.map(a => ({
+      id: a.id,
+      name: a.name,
+      description: a.description,
+      icon: a.icon,
+      unlocked: !!a.unlockedAt
+  }));
 
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto">
@@ -194,11 +174,11 @@ export default function Goals() {
         <div className="flex items-center gap-2 mb-5">
           <h2 className="text-xl font-display font-bold">Achievements</h2>
           <span className="text-sm text-muted-foreground bg-muted px-2 py-1 border border-border">
-            {allBadges.filter(b => b.unlocked).length}/{allBadges.length} unlocked
+            {badges.filter(b => b.unlocked).length}/{badges.length} unlocked
           </span>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
-          {allBadges.map((badge, index) => (
+          {badges.map((badge, index) => (
             <AchievementBadge key={badge.id} badge={badge} index={index} />
           ))}
         </div>

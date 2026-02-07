@@ -1,61 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useFinance } from '@/contexts/FinanceContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Clock, Sparkles } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-
-// Generate mock transactions for a given month
-const generateMockTransactions = (year: number, month: number) => {
-  const transactions: Record<string, { amount: number; items: { name: string; amount: number }[] }> = {};
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const today = new Date();
-  const isCurrentMonth = today.getMonth() === month && today.getFullYear() === year;
-  const maxDay = isCurrentMonth ? today.getDate() : daysInMonth;
-  
-  for (let day = 1; day <= maxDay; day++) {
-    const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    const dailyItems: { name: string; amount: number }[] = [];
-    const numTransactions = Math.floor(Math.random() * 4) + 1;
-    
-    const possibleItems = [
-      { name: 'Coffee', range: [4, 8] },
-      { name: 'Lunch', range: [12, 25] },
-      { name: 'Groceries', range: [30, 80] },
-      { name: 'Gas', range: [40, 70] },
-      { name: 'Uber', range: [15, 35] },
-      { name: 'Amazon', range: [20, 100] },
-      { name: 'Dining', range: [25, 60] },
-      { name: 'Subscription', range: [10, 20] },
-    ];
-    
-    for (let i = 0; i < numTransactions; i++) {
-      const item = possibleItems[Math.floor(Math.random() * possibleItems.length)];
-      const amount = Math.random() * (item.range[1] - item.range[0]) + item.range[0];
-      dailyItems.push({ name: item.name, amount: Math.round(amount * 100) / 100 });
-    }
-    
-    const totalAmount = dailyItems.reduce((sum, item) => sum + item.amount, 0);
-    transactions[dateKey] = {
-      amount: Math.round(totalAmount * 100) / 100,
-      items: dailyItems,
-    };
-  }
-  
-  return transactions;
-};
-
-// Cache for transactions by month
-const transactionCache: Record<string, ReturnType<typeof generateMockTransactions>> = {};
-
-const getTransactionsForMonth = (year: number, month: number) => {
-  const key = `${year}-${month}`;
-  if (!transactionCache[key]) {
-    transactionCache[key] = generateMockTransactions(year, month);
-  }
-  return transactionCache[key];
-};
 
 type CostLevel = 'zero' | 'low' | 'medium' | 'high';
 
@@ -112,7 +61,25 @@ export default function TimeCalendar() {
   };
   
   const { daysInMonth, startingDayOfWeek, year, month } = getDaysInMonth(currentDate);
-  const transactions = getTransactionsForMonth(year, month);
+
+  // Group real transactions for current month
+  const transactions = useMemo(() => {
+      const grouped: Record<string, { amount: number; items: { name: string; amount: number }[] }> = {};
+      
+      data.transactions.forEach(t => {
+          const d = new Date(t.date);
+          // Use UTC to match the ISO date strings from backend
+          if (d.getUTCMonth() === month && d.getUTCFullYear() === year && t.type === 'expense') {
+              const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+              if (!grouped[dateKey]) {
+                  grouped[dateKey] = { amount: 0, items: [] };
+              }
+              grouped[dateKey].amount += Math.abs(t.amount);
+              grouped[dateKey].items.push({ name: t.merchant, amount: Math.abs(t.amount) });
+          }
+      });
+      return grouped;
+  }, [data.transactions, month, year]);
   
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',

@@ -8,46 +8,14 @@ import { PennyMascot } from '@/components/PennyMascot';
 import { Coins, Check, Star, Sparkles, Shirt, Palette, Smile, LayoutGrid, Flame, ShoppingBag, BarChart3 } from 'lucide-react';
 import { toast } from 'sonner';
 
-const shopItems: ShopItem[] = [
-  // Outfits
-  { id: 'bowtie-red', name: 'Red Bowtie', category: 'outfit', description: 'A classic red look', price: 50, rarity: 'common' },
-  { id: 'bowtie-gold', name: 'Gold Bowtie', category: 'outfit', description: 'Shiny and elegant', price: 150, rarity: 'rare' },
-  { id: 'hat-tophat', name: 'Top Hat', category: 'outfit', description: 'Fancy penguin vibes', price: 100, rarity: 'common' },
-  { id: 'hat-crown', name: 'Royal Crown', category: 'outfit', description: 'For the budget royalty', price: 500, rarity: 'legendary' },
-  { id: 'glasses', name: 'Cool Glasses', category: 'outfit', description: 'Stay cool', price: 75, rarity: 'common' },
-  { id: 'scarf', name: 'Cozy Scarf', category: 'outfit', description: 'Winter ready', price: 80, rarity: 'common' },
-  
-  // Themes
-  { id: 'theme-ocean', name: 'Ocean Blue', category: 'theme', description: 'Calm and serene', price: 200, rarity: 'common' },
-  { id: 'theme-sunset', name: 'Sunset Coral', category: 'theme', description: 'Warm and inviting', price: 200, rarity: 'common' },
-  { id: 'theme-midnight', name: 'Midnight Dark', category: 'theme', description: 'Easy on the eyes', price: 200, rarity: 'common' },
-  { id: 'theme-forest', name: 'Forest Green', category: 'theme', description: 'Nature inspired', price: 200, rarity: 'common' },
-  { id: 'theme-gold', name: 'Gold Premium', category: 'theme', description: 'Luxurious feel', price: 1000, rarity: 'legendary' },
-  
-  // Expressions
-  { id: 'expr-dance', name: 'Dancing Penny', category: 'expression', description: 'Celebrate savings!', price: 300, rarity: 'rare' },
-  { id: 'expr-sleep', name: 'Sleeping Penny', category: 'expression', description: 'Passive income mode', price: 250, rarity: 'rare' },
-  { id: 'expr-hero', name: 'Superhero Penny', category: 'expression', description: 'Budget hero!', price: 400, rarity: 'rare' },
-  { id: 'expr-ninja', name: 'Ninja Penny', category: 'expression', description: 'Stealthy savings', price: 350, rarity: 'rare' },
-  
-  // Widgets
-  { id: 'widget-analytics', name: 'Advanced Analytics', category: 'widget', description: 'Deep dive into your data', price: 500, rarity: 'rare' },
-  { id: 'widget-invest', name: 'Investment Tracker', category: 'widget', description: 'Track your portfolio', price: 600, rarity: 'rare' },
-  { id: 'widget-networth', name: 'Net Worth Timeline', category: 'widget', description: 'See your wealth grow', price: 400, rarity: 'rare' },
-  
-  // Streak shields
-  { id: 'streak-1', name: 'Streak Freeze x1', category: 'streak', description: 'Protect one missed day', price: 50, rarity: 'common' },
-  { id: 'streak-3', name: 'Streak Freeze x3', category: 'streak', description: 'Pack of three', price: 120, rarity: 'common' },
-];
-
-const rarityColors = {
+const rarityColors: Record<string, string> = {
   common: 'bg-muted text-muted-foreground',
   rare: 'bg-primary/20 text-primary',
   legendary: 'bg-secondary/20 text-secondary',
 };
 
 export default function Shop() {
-  const { data, purchaseItem } = useFinance();
+  const { data, purchaseItem, shopCatalog } = useFinance();
   const [selectedCategory, setSelectedCategory] = useState('outfit');
 
   const handlePurchase = (item: ShopItem) => {
@@ -67,7 +35,7 @@ export default function Shop() {
     }
   };
 
-  const filteredItems = shopItems.filter(item => item.category === selectedCategory);
+  const filteredItems = shopCatalog.filter(item => item.category === selectedCategory);
   const ownedItemIds = data.ownedItems.map(i => i.id);
 
   return (
@@ -220,7 +188,7 @@ export default function Shop() {
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {shopItems.filter(i => i.rarity === 'legendary').slice(0, 3).map((item, index) => (
+          {shopCatalog.filter(i => i.rarity === 'legendary').slice(0, 3).map((item, index) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, scale: 0.95 }}

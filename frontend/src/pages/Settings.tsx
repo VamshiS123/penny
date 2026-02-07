@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { User, Bell, Shield, Palette, CreditCard, LogOut, ChevronRight, Moon, Sun, Smartphone } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
+import { useFinance } from '@/contexts/FinanceContext';
 
 interface SettingSection {
   id: string;
@@ -20,6 +21,7 @@ interface SettingItem {
 }
 
 export default function Settings() {
+  const { data, logout } = useFinance();
   const [notifications, setNotifications] = useState({
     spending: true,
     goals: true,
@@ -58,8 +60,8 @@ export default function Settings() {
       title: 'Profile',
       icon: <User className="w-5 h-5" />,
       items: [
-        { id: 'name', label: 'Name', description: 'Alex Johnson', type: 'link' },
-        { id: 'email', label: 'Email', description: 'alex@example.com', type: 'link' },
+        { id: 'name', label: 'Name', description: data.fullName || 'User', type: 'link' },
+        { id: 'email', label: 'Email', description: data.email || 'user@example.com', type: 'link' },
         { id: 'phone', label: 'Phone', description: '+1 (555) 123-4567', type: 'link' },
       ],
     },
@@ -198,7 +200,10 @@ export default function Settings() {
         transition={{ delay: 0.5 }}
         className="mt-8"
       >
-        <Button className="w-full brutal-btn bg-foreground text-background gap-2">
+        <Button 
+          className="w-full brutal-btn bg-foreground text-background gap-2"
+          onClick={logout}
+        >
           <LogOut className="w-5 h-5" />
           Sign Out
         </Button>

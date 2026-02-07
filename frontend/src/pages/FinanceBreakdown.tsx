@@ -14,14 +14,14 @@ export default function FinanceBreakdown() {
   const [animatingExpense, setAnimatingExpense] = useState(-1);
   const [showTimeTranslation, setShowTimeTranslation] = useState(false);
 
-  const monthlyIncome = data.monthlyIncome || 4800;
+  const monthlyIncome = data.monthlyIncome;
   const expenses = data.expenses;
   const totalExpenses = getTotalExpenses();
   const remaining = monthlyIncome - totalExpenses;
-  const hourlyRate = data.calculatedHourlyRate || 27.88;
+  const hourlyRate = data.calculatedHourlyRate;
 
-  const expenseHours = getTimeEquivalent(totalExpenses) || totalExpenses / hourlyRate;
-  const remainingHours = getTimeEquivalent(remaining) || remaining / hourlyRate;
+  const expenseHours = getTimeEquivalent(totalExpenses);
+  const remainingHours = getTimeEquivalent(remaining);
 
   useEffect(() => {
     const timers: NodeJS.Timeout[] = [];
@@ -56,10 +56,11 @@ export default function FinanceBreakdown() {
 
   const getProgressWidth = () => {
     if (step < 2) return 100;
+    if (monthlyIncome === 0) return 0;
     const spentSoFar = expenses
       .slice(0, animatingExpense + 1)
       .reduce((sum, e) => sum + e.amount, 0);
-    return ((monthlyIncome - spentSoFar) / monthlyIncome) * 100;
+    return Math.max(0, ((monthlyIncome - spentSoFar) / monthlyIncome) * 100);
   };
 
   const getPennyMessage = () => {
@@ -260,7 +261,7 @@ export default function FinanceBreakdown() {
                 <p className="text-sm text-muted-foreground">Target: Save 10%</p>
                 <p className="font-bold text-lg">${Math.round(monthlyIncome * 0.1)}/month</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  That's just 2 fewer DoorDash orders per week
+                  That's about ${Math.round((monthlyIncome * 0.1) / 4)} per week in small changes
                 </p>
               </div>
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useFinance } from '@/contexts/FinanceContext';
@@ -17,6 +17,8 @@ import {
 import { ArrowRight, Check, Shield, Plane, CreditCard, Car, Home, GraduationCap, Star, Upload, Building2, HelpCircle, ThumbsUp, PiggyBank } from 'lucide-react';
 import { PennyMascot, PennyMood } from '@/components/PennyMascot';
 import { LucideIcon } from 'lucide-react';
+import { uploadCSV } from '@/lib/api';
+import { toast } from 'sonner';
 
 const steps = ['Income', 'About You', 'Goals', 'Connect Bank'];
 
@@ -46,7 +48,8 @@ const stepTitles = [
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { data, updateData } = useFinance();
+  const { data, updateData, uploadCSV } = useFinance();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [incomeType, setIncomeType] = useState<'salary' | 'hourly'>('salary');
   const [salary, setSalary] = useState('');
@@ -61,6 +64,19 @@ export default function Onboarding() {
   const [goalAmounts, setGoalAmounts] = useState<Record<string, string>>({});
 
   const progress = ((currentStep + 1) / steps.length) * 100;
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      await uploadCSV(file);
+      toast.success("CSV Uploaded successfully!");
+      handleNext();
+    } catch (error) {
+      toast.error("Failed to upload CSV");
+    }
+  };
 
   const calculateHourlyRate = (): number => {
     if (incomeType === 'hourly') {
@@ -448,7 +464,17 @@ export default function Onboarding() {
                 </div>
               </Card>
 
-              <Card className="p-5 cursor-pointer hover:bg-muted/30 transition-all border-0 bg-muted/50 group">
+              <Card 
+                className="p-5 cursor-pointer hover:bg-muted/30 transition-all border-0 bg-muted/50 group"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  accept=".csv"
+                  className="hidden"
+                />
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center">
                     <Upload className="w-6 h-6 text-secondary" />

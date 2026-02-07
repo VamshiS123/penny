@@ -58,8 +58,8 @@ export default function Landing() {
             </div>
             
             <div className="flex items-center gap-3">
-              <Button variant="ghost" className="hidden sm:inline-flex">Login</Button>
-              <Button onClick={() => navigate('/onboarding')} className="btn-gradient-primary">
+              <Button variant="ghost" className="hidden sm:inline-flex" onClick={() => navigate('/login')}>Login</Button>
+              <Button onClick={() => navigate('/register')} className="btn-gradient-primary">
                 Get Started
               </Button>
             </div>
@@ -97,12 +97,12 @@ export default function Landing() {
                 <Button 
                   size="lg" 
                   className="btn-gradient-primary gap-2"
-                  onClick={() => navigate('/onboarding')}
+                  onClick={() => navigate('/register')}
                 >
                   <Landmark className="w-4 h-4" />
                   Connect Bank
                 </Button>
-                <Button size="lg" variant="outline" className="gap-2">
+                <Button size="lg" variant="outline" className="gap-2" onClick={() => navigate('/register')}>
                   <Upload className="w-4 h-4" />
                   Upload CSV
                 </Button>
@@ -249,7 +249,7 @@ export default function Landing() {
                 size="lg" 
                 variant="secondary"
                 className="font-semibold"
-                onClick={() => navigate('/onboarding')}
+                onClick={() => navigate('/register')}
               >
                 Start Your Free Trial
               </Button>

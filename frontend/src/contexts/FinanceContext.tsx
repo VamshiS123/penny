@@ -1,12 +1,12 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { 
-  Home, Zap, Smartphone, Car, RefreshCw, Pizza, Fuel,
-  Shield, Plane, CreditCard, GraduationCap, Star,
-  Egg, Flame, Coins, Ghost, Target, Crown, Clock, Users
-} from 'lucide-react';
+import { createContext, useContext, ReactNode, useEffect, useMemo, useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { LucideIcon } from 'lucide-react';
+import { getIcon } from '@/lib/icons';
+import * as api from '@/lib/api';
 
 export interface UserFinanceData {
+  email: string;
+  fullName?: string;
   // Income
   incomeType: 'salary' | 'hourly';
   annualSalary?: number;
@@ -25,8 +25,14 @@ export interface UserFinanceData {
   // Goals
   selectedGoals: Goal[];
 
-  // Expenses (mock data for demo)
+  // Expenses
   expenses: Expense[];
+
+  // Accounts
+  accounts: Account[];
+  
+  // Transactions
+  transactions: Transaction[];
   
   // Gamification
   xp: number;
@@ -38,10 +44,19 @@ export interface UserFinanceData {
   equippedItems: ShopItem[];
 }
 
+export interface Account {
+  id: string;
+  name: string;
+  type: string;
+  balance: number;
+  color: string;
+  initial: string;
+}
+
 export interface Goal {
   id: string;
   name: string;
-  icon: string;
+  icon: LucideIcon;
   description: string;
   targetAmount: number;
   savedAmount: number;
@@ -83,48 +98,33 @@ export interface Transaction {
   amount: number;
   date: Date;
   timeCost: number;
+  type: 'income' | 'expense';
 }
 
-const defaultExpenses: Expense[] = [
-  { id: '1', category: 'Housing', icon: Home, name: 'Rent', amount: 1400, isFixed: true },
-  { id: '2', category: 'Utilities', icon: Zap, name: 'Utilities', amount: 180, isFixed: true },
-  { id: '3', category: 'Phone', icon: Smartphone, name: 'Phone', amount: 85, isFixed: true },
-  { id: '4', category: 'Transportation', icon: Car, name: 'Car Payment', amount: 350, isFixed: true },
-  { id: '5', category: 'Subscriptions', icon: RefreshCw, name: 'Subscriptions', amount: 127, isFixed: true },
-  { id: '6', category: 'Food', icon: Pizza, name: 'Food (estimated)', amount: 450, isFixed: false },
-  { id: '7', category: 'Gas', icon: Fuel, name: 'Gas/Transport', amount: 200, isFixed: false },
-];
-
-const defaultGoals: Goal[] = [];
-
-const defaultAchievements: Achievement[] = [
-  { id: '1', name: 'First Steps', description: 'Complete onboarding', icon: Egg, xpReward: 50 },
-  { id: '2', name: 'Week Warrior', description: '7 day streak', icon: Flame, xpReward: 100 },
-  { id: '3', name: 'First $100', description: 'Save your first $100', icon: Coins, xpReward: 150 },
-  { id: '4', name: 'Ghost Buster', description: 'Cancel first subscription', icon: Ghost, xpReward: 75 },
-  { id: '5', name: 'Goal Getter', description: 'Complete your first goal', icon: Target, xpReward: 200 },
-  { id: '6', name: 'Budget Master', description: 'Stay under budget for a month', icon: Crown, xpReward: 300 },
-  { id: '7', name: 'Time Lord', description: 'Check time calendar 30 times', icon: Clock, xpReward: 100 },
-  { id: '8', name: 'Social Saver', description: 'Compare with 10 Financial Twins', icon: Users, xpReward: 75 },
-];
-
 const initialData: UserFinanceData = {
+  email: '',
+  fullName: '',
   incomeType: 'salary',
   calculatedHourlyRate: 0,
   monthlyIncome: 0,
-  selectedGoals: defaultGoals,
-  expenses: defaultExpenses,
+  selectedGoals: [],
+  expenses: [],
+  accounts: [],
+  transactions: [],
   xp: 0,
   level: 1,
   streak: 0,
   coins: 100,
-  achievements: defaultAchievements,
+  achievements: [],
   ownedItems: [],
   equippedItems: [],
 };
 
 interface FinanceContextType {
   data: UserFinanceData;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  shopCatalog: ShopItem[];
   updateData: (updates: Partial<UserFinanceData>) => void;
   calculateHourlyRate: () => number;
   getTotalExpenses: () => number;
@@ -135,89 +135,358 @@ interface FinanceContextType {
   unlockAchievement: (id: string) => void;
   purchaseItem: (item: ShopItem) => boolean;
   equipItem: (item: ShopItem) => void;
+  logout: () => void;
+  checkAuth: () => void;
+  uploadCSV: (file: File) => Promise<void>;
 }
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
 
 export function FinanceProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<UserFinanceData>(initialData);
+  const queryClient = useQueryClient();
+  const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
+  const isAuthenticated = !!token;
+
+  const checkAuth = () => {
+    setToken(localStorage.getItem("token"));
+  };
+
+  // --- Queries ---
+  const userQuery = useQuery({ 
+      queryKey: ['user'], 
+      queryFn: api.fetchUser,
+      enabled: isAuthenticated 
+  });
+  const expensesQuery = useQuery({ 
+      queryKey: ['expenses'], 
+      queryFn: api.fetchExpenses,
+      enabled: isAuthenticated 
+  });
+  const goalsQuery = useQuery({ 
+      queryKey: ['goals'], 
+      queryFn: api.fetchGoals,
+      enabled: isAuthenticated 
+  });
+  const accountsQuery = useQuery({ 
+      queryKey: ['accounts'], 
+      queryFn: api.fetchAccounts,
+      enabled: isAuthenticated 
+  });
+  const transactionsQuery = useQuery({ 
+      queryKey: ['transactions'], 
+      queryFn: api.fetchTransactions,
+      enabled: isAuthenticated 
+  });
+  const achievementsQuery = useQuery({ 
+      queryKey: ['achievements'], 
+      queryFn: api.fetchAchievements,
+      enabled: isAuthenticated 
+  });
+  const shopQuery = useQuery({ 
+      queryKey: ['shop'], 
+      queryFn: api.fetchShopItems,
+      enabled: isAuthenticated 
+  });
+  
+  // Seed if empty (One time check or handled by backend? Handled here for simplicity)
+  useEffect(() => {
+    if (isAuthenticated && achievementsQuery.data && achievementsQuery.data.length === 0) {
+      api.seedAchievements().then(() => queryClient.invalidateQueries({ queryKey: ['achievements'] }));
+    }
+    if (isAuthenticated && shopQuery.data && shopQuery.data.length === 0) {
+      api.seedShopItems().then(() => queryClient.invalidateQueries({ queryKey: ['shop'] }));
+    }
+  }, [achievementsQuery.data, shopQuery.data, queryClient, isAuthenticated]);
+
+
+  // --- Mutations ---
+  const updateUserMutation = useMutation({
+    mutationFn: api.updateUser,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['user'] }),
+  });
+
+  const createGoalMutation = useMutation({
+    mutationFn: api.createGoal,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['goals'] }),
+  });
+
+  const unlockAchievementMutation = useMutation({
+    mutationFn: api.unlockAchievement,
+    onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['achievements'] });
+        queryClient.invalidateQueries({ queryKey: ['user'] }); // XP update
+    }
+  });
+
+  const purchaseItemMutation = useMutation({
+    mutationFn: api.purchaseItem,
+    onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['shop'] });
+        queryClient.invalidateQueries({ queryKey: ['user'] }); // Coins update
+    }
+  });
+
+  const equipItemMutation = useMutation({
+    mutationFn: api.equipItem,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['user'] }) 
+  });
+
+  const uploadCSVMutation = useMutation({
+    mutationFn: api.uploadCSV,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['goals'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+    }
+  });
+
+
+  // --- Data Construction ---
+  const data: UserFinanceData = useMemo(() => {
+    const user = userQuery.data || {};
+    const expenses = expensesQuery.data || [];
+    const goals = goalsQuery.data || [];
+    const transactions = transactionsQuery.data || [];
+    const accounts = accountsQuery.data || [];
+    const allAchievements = achievementsQuery.data || [];
+    const allShopItems = shopQuery.data || [];
+
+    // Calculate generic values if missing from backend or needing calculation
+    // Note: Backend stores raw values.
+    
+    // Map User
+    const mappedUser: Partial<UserFinanceData> = {
+        email: user.email || '',
+        fullName: user.full_name || '',
+        incomeType: user.income_type || 'salary',
+        annualSalary: user.annual_salary,
+        payFrequency: user.pay_frequency,
+        hourlyRate: user.hourly_rate,
+        hoursPerWeek: user.hours_per_week,
+        calculatedHourlyRate: 0, // Recalculated below
+        monthlyIncome: 0, // Recalculated below
+        age: user.age,
+        city: user.city,
+        householdSize: user.household_size,
+        housingStatus: user.housing_status,
+        xp: user.xp || 0,
+        level: user.level || 1,
+        streak: user.streak || 0,
+        coins: user.coins || 100,
+    };
+
+    // Recalculate derived income fields locally for now to match frontend logic
+    if (mappedUser.incomeType === 'hourly' && mappedUser.hourlyRate) {
+        mappedUser.calculatedHourlyRate = mappedUser.hourlyRate;
+        mappedUser.monthlyIncome = (mappedUser.hourlyRate * (mappedUser.hoursPerWeek || 40)) * 4.33;
+    } else if (mappedUser.annualSalary) {
+        mappedUser.calculatedHourlyRate = mappedUser.annualSalary / 2080;
+        mappedUser.monthlyIncome = mappedUser.annualSalary / 12;
+    }
+
+    // Map Expenses
+    const mappedExpenses: Expense[] = expenses.map((e: any) => ({
+        id: e.id,
+        category: e.category,
+        name: e.name,
+        amount: e.amount,
+        isFixed: e.is_fixed,
+        icon: getIcon(e.icon || e.category), // backend sends string
+    }));
+
+    // Map Goals
+    const mappedGoals: Goal[] = goals.map((g: any) => ({
+        id: g.id,
+        name: g.name,
+        description: g.description,
+        targetAmount: g.target_amount,
+        savedAmount: g.saved_amount,
+        icon: getIcon(g.icon),
+    }));
+    
+    // Map Accounts
+    const mappedAccounts: Account[] = accounts.map((a: any) => ({
+        id: a.id,
+        name: a.name,
+        type: a.type,
+        balance: a.balance,
+        color: a.color,
+        initial: a.initial,
+    }));
+
+    // Map Transactions
+    const mappedTransactions: Transaction[] = transactions.map((t: any) => ({
+        id: t.id,
+        merchant: t.merchant,
+        category: t.category,
+        amount: t.amount,
+        date: new Date(t.date),
+        timeCost: 0, 
+        icon: getIcon(t.icon || t.category),
+        type: t.category === 'Income' ? 'income' : 'expense',
+    }));
+
+    // Map Achievements
+    const unlockedAchievementIds = new Set((user.achievements || []).map((ua: any) => ua.achievement_id));
+    
+    const mappedAchievements: Achievement[] = allAchievements.map((a: any) => ({
+        id: a.id,
+        name: a.name,
+        description: a.description,
+        icon: getIcon(a.icon),
+        xpReward: a.xp_reward,
+        unlockedAt: unlockedAchievementIds.has(a.id) ? new Date() : undefined,
+    }));
+
+    // Map Shop Items
+    const ownedItemIds = new Set((user.items || []).map((ui: any) => ui.item_id));
+    const equippedItemIds = new Set((user.items || []).filter((ui: any) => ui.is_equipped).map((ui: any) => ui.item_id));
+
+    const mappedOwnedItems: ShopItem[] = allShopItems
+        .filter((item: any) => ownedItemIds.has(item.id))
+        .map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            category: item.category,
+            description: item.description,
+            price: item.price,
+            rarity: item.rarity
+        }));
+
+    const mappedEquippedItems: ShopItem[] = allShopItems
+        .filter((item: any) => equippedItemIds.has(item.id))
+        .map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            category: item.category,
+            description: item.description,
+            price: item.price,
+            rarity: item.rarity
+        }));
+
+    return {
+        ...initialData,
+        ...mappedUser,
+        selectedGoals: mappedGoals,
+        expenses: mappedExpenses,
+        accounts: mappedAccounts,
+        transactions: mappedTransactions,
+        achievements: mappedAchievements,
+        ownedItems: mappedOwnedItems,
+        equippedItems: mappedEquippedItems,
+    } as UserFinanceData;
+
+  }, [userQuery.data, expensesQuery.data, goalsQuery.data, achievementsQuery.data, shopQuery.data, accountsQuery.data, transactionsQuery.data]);
+
 
   const updateData = (updates: Partial<UserFinanceData>) => {
-    setData(prev => ({ ...prev, ...updates }));
-  };
+    // Determine what to update on backend
+    const userUpdates: any = {};
+    let hasUserUpdates = false;
 
-  const calculateHourlyRate = (): number => {
-    if (data.incomeType === 'hourly' && data.hourlyRate) {
-      return data.hourlyRate;
+    if (updates.incomeType) { userUpdates.income_type = updates.incomeType; hasUserUpdates = true; }
+    if (updates.annualSalary !== undefined) { userUpdates.annual_salary = updates.annualSalary; hasUserUpdates = true; }
+    if (updates.payFrequency) { userUpdates.pay_frequency = updates.payFrequency; hasUserUpdates = true; }
+    if (updates.hourlyRate !== undefined) { userUpdates.hourly_rate = updates.hourlyRate; hasUserUpdates = true; }
+    if (updates.hoursPerWeek !== undefined) { userUpdates.hours_per_week = updates.hoursPerWeek; hasUserUpdates = true; }
+    if (updates.age !== undefined) { userUpdates.age = updates.age; hasUserUpdates = true; }
+    if (updates.city !== undefined) { userUpdates.city = updates.city; hasUserUpdates = true; }
+    if (updates.householdSize !== undefined) { userUpdates.household_size = updates.householdSize; hasUserUpdates = true; }
+    if (updates.housingStatus) { userUpdates.housing_status = updates.housingStatus; hasUserUpdates = true; }
+
+    if (hasUserUpdates) {
+        updateUserMutation.mutate(userUpdates);
     }
-    if (data.incomeType === 'salary' && data.annualSalary) {
-      // Assuming 2080 work hours per year (40 hours/week * 52 weeks)
-      return data.annualSalary / 2080;
+
+    if (updates.selectedGoals) {
+        // Simple logic: Create new goals.
+        // Warning: This creates duplicates if not careful.
+        // Onboarding flow creates new goals.
+        updates.selectedGoals.forEach(g => {
+            // Check if it has a real ID (UUID) -> Update
+            // If ID is short string (e.g. 'car') -> Create
+            if (g.id && g.id.length > 10) { 
+                 // Update? api.updateGoal(g.id, ...)
+            } else {
+                createGoalMutation.mutate({
+                    name: g.name,
+                    description: g.description,
+                    target_amount: g.targetAmount,
+                    icon: g.icon,
+                });
+            }
+        });
     }
-    return 0;
+
+    // Expenses: Logic needed if updating expenses via this method
   };
 
-  const getTotalExpenses = (): number => {
-    return data.expenses.reduce((sum, exp) => sum + exp.amount, 0);
-  };
-
-  const getRemainingIncome = (): number => {
-    return data.monthlyIncome - getTotalExpenses();
-  };
-
+  const calculateHourlyRate = (): number => data.calculatedHourlyRate;
+  const getTotalExpenses = (): number => data.expenses.reduce((sum, exp) => sum + exp.amount, 0);
+  const getRemainingIncome = (): number => data.monthlyIncome - getTotalExpenses();
+  
   const getTimeEquivalent = (amount: number): number => {
-    const hourlyRate = data.calculatedHourlyRate || calculateHourlyRate();
+    const hourlyRate = data.calculatedHourlyRate || 0;
     if (hourlyRate <= 0) return 0;
     return amount / hourlyRate;
   };
 
   const addXP = (amount: number) => {
-    setData(prev => {
-      const newXP = prev.xp + amount;
-      const xpPerLevel = 500;
-      const newLevel = Math.floor(newXP / xpPerLevel) + 1;
-      return { ...prev, xp: newXP, level: newLevel };
-    });
+      // Optimistic update done by query invalidation usually, 
+      // but here we just need to ensure backend knows.
+      // Backend handles XP via achievement unlock mostly.
+      // If manual XP add is needed, we need an endpoint or just update user.
+      const newXP = data.xp + amount;
+      updateUserMutation.mutate({ xp: newXP });
   };
 
   const addCoins = (amount: number) => {
-    setData(prev => ({ ...prev, coins: prev.coins + amount }));
+      const newCoins = data.coins + amount;
+      updateUserMutation.mutate({ coins: newCoins });
   };
 
   const unlockAchievement = (id: string) => {
-    setData(prev => {
-      const achievements = prev.achievements.map(a => 
-        a.id === id && !a.unlockedAt 
-          ? { ...a, unlockedAt: new Date() } 
-          : a
-      );
-      const achievement = achievements.find(a => a.id === id);
-      const newXP = achievement?.unlockedAt ? prev.xp : prev.xp + (achievement?.xpReward || 0);
-      return { ...prev, achievements, xp: newXP };
-    });
+      unlockAchievementMutation.mutate(id);
   };
 
   const purchaseItem = (item: ShopItem): boolean => {
-    if (data.coins < item.price) return false;
-    setData(prev => ({
-      ...prev,
-      coins: prev.coins - item.price,
-      ownedItems: [...prev.ownedItems, item],
-    }));
-    return true;
+      // Optimistic check
+      if (data.coins < item.price) return false;
+      purchaseItemMutation.mutate(item.id);
+      return true;
   };
 
   const equipItem = (item: ShopItem) => {
-    setData(prev => {
-      // Remove any equipped item of the same category
-      const filtered = prev.equippedItems.filter(i => i.category !== item.category);
-      return { ...prev, equippedItems: [...filtered, item] };
-    });
+      equipItemMutation.mutate(item.id);
   };
+
+  const logout = () => {
+      api.logout();
+      setToken(null);
+      queryClient.clear();
+      window.location.href = "/login";
+  };
+
+  const isLoading = isAuthenticated && (userQuery.isLoading || expensesQuery.isLoading);
+
+  const shopCatalog = (shopQuery.data || []).map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      category: item.category,
+      description: item.description,
+      price: item.price,
+      rarity: item.rarity,
+      preview: item.preview
+  }));
 
   return (
     <FinanceContext.Provider value={{
-      data,
+      data: isAuthenticated ? data : initialData,
+      isLoading,
+      isAuthenticated,
+      shopCatalog,
       updateData,
       calculateHourlyRate,
       getTotalExpenses,
@@ -228,6 +497,11 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       unlockAchievement,
       purchaseItem,
       equipItem,
+      logout,
+      checkAuth,
+      uploadCSV: async (file: File) => {
+          await uploadCSVMutation.mutateAsync(file);
+      },
     }}>
       {children}
     </FinanceContext.Provider>

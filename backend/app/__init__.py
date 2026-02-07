@@ -9,6 +9,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.core.config import Config
 from app.core.db import get_session, init_db
+from app.api.v1.api import api_router
 
 
 @asynccontextmanager
@@ -33,11 +34,11 @@ app = FastAPI(lifespan=lifespan, title="Penny Backend", version="1.0.0")
 logger.trace("Checking DEBUG mode for CORS middleware configuration.")
 if Config.DEBUG:
     logger.info("DEBUG mode is enabled. Adding CORS middleware for development.")
-    logger.trace(f"Allowed origins: {['http://frontend:5173', 'http://frontend:8000']}")
+    logger.trace(f"Allowed origins: {['http://frontend:5173', 'http://frontend:8000', 'http://localhost:5173']}")
     # CORS Middleware for development
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://frontend:5173", "http://frontend:8000"],
+        allow_origins=["http://frontend:5173", "http://frontend:8000", "http://localhost:5173"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -47,6 +48,7 @@ else:
 
 # Include API routers
 logger.trace("Including API routers...")
+app.include_router(api_router, prefix="/api/v1")
 
 
 @app.get("/")

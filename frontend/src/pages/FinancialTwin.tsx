@@ -13,13 +13,22 @@ import {
 import { PennyMascot } from '@/components/PennyMascot';
 
 // Mock "Financial Twin" data based on similar demographics
-const generateTwinData = (userData: { age?: number; city?: string; householdSize?: number }) => {
+const generateTwinData = (
+  userData: { age?: number; city?: string; householdSize?: number; fullName?: string },
+  expenses: Record<string, number>
+) => {
+  // Helper to get expense or default
+  const getExp = (cat: string, def: number) => expenses[cat] || def;
+
+  const matchScore = userData.city && userData.age ? 92 : 65;
+  const twinCount = userData.city ? 1450 : 8500;
+
   // In a real app, this would come from aggregated user data
   return {
-    matchScore: 87,
-    twinCount: 2341,
+    matchScore,
+    twinCount,
     demographics: {
-      ageRange: `${(userData.age || 28) - 3}-${(userData.age || 28) + 3}`,
+      ageRange: userData.age ? `${userData.age - 2}-${userData.age + 2}` : '25-35',
       location: userData.city || 'Similar metro area',
       householdSize: userData.householdSize || 1,
     },
@@ -27,49 +36,49 @@ const generateTwinData = (userData: { age?: number; city?: string; householdSize
       {
         category: 'Housing',
         icon: Home,
-        yourAmount: 1400,
+        yourAmount: getExp('Housing', 1400),
         twinAverage: 1350,
-        difference: 50,
+        difference: getExp('Housing', 1400) - 1350,
         percentile: 55,
       },
       {
-        category: 'Food & Dining',
+        category: 'Food & Dining', // Matches 'Food' or 'Food & Drink'
         icon: Pizza,
-        yourAmount: 450,
+        yourAmount: getExp('Food', 450),
         twinAverage: 520,
-        difference: -70,
+        difference: getExp('Food', 450) - 520,
         percentile: 35,
       },
       {
         category: 'Transportation',
         icon: Car,
-        yourAmount: 350,
+        yourAmount: getExp('Transportation', 350),
         twinAverage: 380,
-        difference: -30,
+        difference: getExp('Transportation', 350) - 380,
         percentile: 42,
       },
       {
         category: 'Entertainment',
         icon: Clapperboard,
-        yourAmount: 200,
+        yourAmount: getExp('Entertainment', 200),
         twinAverage: 180,
-        difference: 20,
+        difference: getExp('Entertainment', 200) - 180,
         percentile: 62,
       },
       {
         category: 'Shopping',
         icon: ShoppingBag,
-        yourAmount: 280,
+        yourAmount: getExp('Shopping', 280),
         twinAverage: 310,
-        difference: -30,
+        difference: getExp('Shopping', 280) - 310,
         percentile: 38,
       },
       {
         category: 'Subscriptions',
         icon: RefreshCw,
-        yourAmount: 127,
+        yourAmount: getExp('Subscriptions', 127),
         twinAverage: 145,
-        difference: -18,
+        difference: getExp('Subscriptions', 127) - 145,
         percentile: 40,
       },
     ],
@@ -107,11 +116,17 @@ export default function FinancialTwin() {
   const { data, addXP } = useFinance();
   const [hasCompared, setHasCompared] = useState(false);
   
+  // Calculate category totals
+  const categoryTotals: Record<string, number> = {};
+  data.expenses.forEach(e => {
+      categoryTotals[e.category] = (categoryTotals[e.category] || 0) + e.amount;
+  });
+
   const twinData = generateTwinData({
     age: data.age,
     city: data.city,
     householdSize: data.householdSize,
-  });
+  }, categoryTotals);
 
   const handleCompare = () => {
     setHasCompared(true);

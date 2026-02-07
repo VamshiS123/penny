@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useFinance } from '@/contexts/FinanceContext';
+import { useFinance, Transaction } from '@/contexts/FinanceContext';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,90 +15,8 @@ import {
 import { 
   Search, Filter, Clock, ArrowUpDown, 
   TrendingUp, TrendingDown, Calendar,
-  Coffee, Package, Car, Film, Music, Salad, Target,
-  Fuel, Utensils, Apple, Dumbbell, Zap, Droplets, Wifi,
-  Pizza, Pill, Video, ShoppingCart, Wallet
 } from 'lucide-react';
 import { PennyMascot } from '@/components/PennyMascot';
-import { LucideIcon } from 'lucide-react';
-
-interface Transaction {
-  id: string;
-  merchant: string;
-  category: string;
-  icon: LucideIcon;
-  amount: number;
-  date: Date;
-  type: 'expense' | 'income';
-}
-
-// Generate mock transactions
-const generateMockTransactions = (): Transaction[] => {
-  const transactions: Transaction[] = [];
-  const merchants = [
-    { name: 'Starbucks', category: 'Food & Drink', icon: Coffee },
-    { name: 'Amazon', category: 'Shopping', icon: Package },
-    { name: 'Uber', category: 'Transport', icon: Car },
-    { name: 'Netflix', category: 'Entertainment', icon: Film },
-    { name: 'Spotify', category: 'Entertainment', icon: Music },
-    { name: 'Whole Foods', category: 'Groceries', icon: Salad },
-    { name: 'Target', category: 'Shopping', icon: Target },
-    { name: 'Shell Gas', category: 'Transport', icon: Fuel },
-    { name: 'Chipotle', category: 'Food & Drink', icon: Utensils },
-    { name: 'Apple', category: 'Shopping', icon: Apple },
-    { name: 'Gym Membership', category: 'Health', icon: Dumbbell },
-    { name: 'Electric Bill', category: 'Utilities', icon: Zap },
-    { name: 'Water Bill', category: 'Utilities', icon: Droplets },
-    { name: 'Internet', category: 'Utilities', icon: Wifi },
-    { name: 'DoorDash', category: 'Food & Drink', icon: Pizza },
-    { name: 'CVS Pharmacy', category: 'Health', icon: Pill },
-    { name: 'MoviePass', category: 'Entertainment', icon: Video },
-    { name: 'Costco', category: 'Groceries', icon: ShoppingCart },
-  ];
-
-  const today = new Date();
-  
-  for (let i = 0; i < 50; i++) {
-    const merchant = merchants[Math.floor(Math.random() * merchants.length)];
-    const daysAgo = Math.floor(Math.random() * 30);
-    const date = new Date(today);
-    date.setDate(date.getDate() - daysAgo);
-    
-    transactions.push({
-      id: `txn-${i}`,
-      merchant: merchant.name,
-      category: merchant.category,
-      icon: merchant.icon,
-      amount: Math.round((Math.random() * 100 + 5) * 100) / 100,
-      date,
-      type: 'expense',
-    });
-  }
-
-  // Add some income
-  transactions.push({
-    id: 'income-1',
-    merchant: 'Paycheck',
-    category: 'Income',
-    icon: Wallet,
-    amount: 2400,
-    date: new Date(today.setDate(1)),
-    type: 'income',
-  });
-  transactions.push({
-    id: 'income-2',
-    merchant: 'Paycheck',
-    category: 'Income',
-    icon: Wallet,
-    amount: 2400,
-    date: new Date(today.setDate(15)),
-    type: 'income',
-  });
-
-  return transactions.sort((a, b) => b.date.getTime() - a.date.getTime());
-};
-
-const mockTransactions = generateMockTransactions();
 
 const categories = [
   'All',
@@ -120,9 +38,10 @@ export default function Transactions() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   
   const hourlyRate = data.calculatedHourlyRate || 27.88;
+  const transactions = data.transactions || [];
   
   const filteredTransactions = useMemo(() => {
-    let filtered = [...mockTransactions];
+    let filtered = [...transactions];
     
     // Search filter
     if (searchQuery) {

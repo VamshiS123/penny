@@ -3,20 +3,27 @@ import { motion } from 'framer-motion';
 import { Sparkles, TrendingUp, Target, ArrowRight, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
+import { useFinance } from '@/contexts/FinanceContext';
 
 export default function FutureYou() {
+  const { data } = useFinance();
   const [savingsRate, setSavingsRate] = useState([20]);
   const [years, setYears] = useState([5]);
 
-  const currentSavings = 15000;
-  const monthlyIncome = 5000;
+  // Calculate real values from data
+  const currentSavings = (data.accounts || [])
+    .filter(a => a.type === 'savings' || a.type === 'investment')
+    .reduce((sum, a) => sum + a.balance, 0);
+    
+  const monthlyIncome = data.monthlyIncome || 0;
+  
   const monthlySavings = (monthlyIncome * savingsRate[0]) / 100;
   const projectedSavings = currentSavings + (monthlySavings * 12 * years[0]);
   const investmentReturn = projectedSavings * 0.07 * years[0]; // 7% annual return
   const totalProjected = projectedSavings + investmentReturn;
 
   const milestones = [
-    { amount: 10000, label: 'Emergency Fund', achieved: currentSavings >= 10000 },
+    { amount: 10000, label: 'Emergency Fund', achieved: totalProjected >= 10000 },
     { amount: 25000, label: 'House Down Payment', achieved: totalProjected >= 25000 },
     { amount: 50000, label: 'Investment Portfolio', achieved: totalProjected >= 50000 },
     { amount: 100000, label: 'Financial Freedom', achieved: totalProjected >= 100000 },

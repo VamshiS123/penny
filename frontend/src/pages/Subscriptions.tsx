@@ -1,8 +1,7 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   AlertTriangle, Calendar, MoreVertical, Pause, Trash2, ExternalLink,
-  Film, Music, Palette, Dumbbell, Cloud, Tv, FileText
+  Film
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,12 +10,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LucideIcon } from 'lucide-react';
+import { useFinance } from '@/contexts/FinanceContext';
 
 interface Subscription {
   id: string;
   name: string;
-  icon: LucideIcon;
+  icon: any;
   price: number;
   cycle: 'monthly' | 'yearly';
   nextBilling: string;
@@ -26,18 +25,25 @@ interface Subscription {
   color: string;
 }
 
-const mockSubscriptions: Subscription[] = [
-  { id: '1', name: 'Netflix', icon: Film, price: 15.99, cycle: 'monthly', nextBilling: '2024-02-15', category: 'Entertainment', status: 'active', usage: 'high', color: 'bg-red-500' },
-  { id: '2', name: 'Spotify', icon: Music, price: 9.99, cycle: 'monthly', nextBilling: '2024-02-20', category: 'Entertainment', status: 'active', usage: 'high', color: 'bg-green-500' },
-  { id: '3', name: 'Adobe Creative', icon: Palette, price: 54.99, cycle: 'monthly', nextBilling: '2024-02-10', category: 'Productivity', status: 'active', usage: 'medium', color: 'bg-pink-500' },
-  { id: '4', name: 'Gym Membership', icon: Dumbbell, price: 29.99, cycle: 'monthly', nextBilling: '2024-02-01', category: 'Health', status: 'active', usage: 'low', color: 'bg-orange-500' },
-  { id: '5', name: 'iCloud Storage', icon: Cloud, price: 2.99, cycle: 'monthly', nextBilling: '2024-02-18', category: 'Utilities', status: 'active', usage: 'high', color: 'bg-blue-500' },
-  { id: '6', name: 'HBO Max', icon: Tv, price: 15.99, cycle: 'monthly', nextBilling: '2024-02-25', category: 'Entertainment', status: 'paused', color: 'bg-purple-500' },
-  { id: '7', name: 'Notion', icon: FileText, price: 10.00, cycle: 'monthly', nextBilling: '2024-02-12', category: 'Productivity', status: 'trial', usage: 'medium', color: 'bg-amber-500' },
-];
-
 export default function Subscriptions() {
-  const [subscriptions] = useState<Subscription[]>(mockSubscriptions);
+  const { data } = useFinance();
+
+  // Derived subscriptions from transactions
+  const subscriptions: Subscription[] = data.transactions
+    .filter(t => t.category === 'Subscriptions' || t.category === 'Entertainment')
+    .filter((t, index, self) => index === self.findIndex((obj) => obj.merchant === t.merchant)) // Unique by merchant for list
+    .map(t => ({
+        id: t.id,
+        name: t.merchant,
+        icon: t.icon || Film,
+        price: Math.abs(t.amount),
+        cycle: 'monthly',
+        nextBilling: new Date().toISOString(), // Mock next billing
+        category: t.category,
+        status: 'active',
+        usage: 'medium',
+        color: 'bg-primary'
+    }));
 
   const activeSubscriptions = subscriptions.filter(s => s.status === 'active');
   const monthlyTotal = activeSubscriptions.reduce((sum, s) => sum + (s.cycle === 'monthly' ? s.price : s.price / 12), 0);

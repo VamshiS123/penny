@@ -6,6 +6,7 @@ from sqlmodel import SQLModel, text
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.core.config import Config
+import app.models # noqa: F401
 
 logger.trace("Attempting to create database engine.")
 # Hiding password in the log
@@ -59,7 +60,7 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
     session: AsyncSession | None = None
     try:
         logger.trace("Creating new AsyncSession from engine.")
-        session = AsyncSession(engine)
+        session = AsyncSession(engine, expire_on_commit=False)
         logger.debug("New database session created. Yielding to context.")
         yield session
         logger.trace("Context finished. Session is about to be closed.")
