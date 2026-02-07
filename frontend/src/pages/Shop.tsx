@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PennyMascot } from '@/components/PennyMascot';
 import { Coins, Check, Star, Sparkles, Shirt, Palette, Smile, LayoutGrid, Flame, ShoppingBag, BarChart3 } from 'lucide-react';
 import { toast } from 'sonner';
+import pennyTopHat from '@/assets/penny-tophat.png';
 
 const rarityColors: Record<string, string> = {
   common: 'bg-muted text-muted-foreground',
@@ -69,7 +70,11 @@ export default function Shop() {
         animate={{ opacity: 1, scale: 1 }}
         className="flex items-center gap-4 mb-8 p-4 bg-accent rounded-2xl"
       >
-        <PennyMascot mood="waving" size="md" />
+        <img 
+          src={pennyTopHat} 
+          alt="Penny" 
+          className="w-24 h-24 object-contain flex-shrink-0"
+        />
         <div className="bg-card rounded-xl p-3 shadow-card relative">
           <div className="absolute -left-2 top-4 w-4 h-4 bg-card rotate-45" />
           <p className="font-medium relative z-10 flex items-center gap-2">

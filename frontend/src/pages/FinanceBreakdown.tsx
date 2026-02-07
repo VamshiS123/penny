@@ -74,24 +74,26 @@ export default function FinanceBreakdown() {
     // Step 1: Start expense animation (delay 2.5s)
     timers.push(setTimeout(() => {
       setStep(2);
-      // Animate each expense one by one
-      expenses.forEach((_, index) => {
+      // Animate each expense one by one (limit to 15)
+      const expensesToShow = Math.min(expenses.length, 15);
+      for (let index = 0; index < expensesToShow; index++) {
         timers.push(setTimeout(() => {
           setAnimatingExpense(index);
         }, index * 600));
-      });
+      }
     }, 2500));
 
-    // Step 2: Show remaining (after all expenses)
+    // Step 2: Show remaining (after all expenses shown)
+    const expensesToShow = Math.min(expenses.length, 15);
     timers.push(setTimeout(() => {
       setStep(3);
-    }, 2500 + expenses.length * 600 + 500));
+    }, 2500 + expensesToShow * 600 + 500));
 
     // Step 3: Show time translation
     timers.push(setTimeout(() => {
       setShowTimeTranslation(true);
       setStep(4);
-    }, 2500 + expenses.length * 600 + 2000));
+    }, 2500 + expensesToShow * 600 + 2000));
 
     return () => timers.forEach(t => clearTimeout(t));
   }, [expenses.length]);
@@ -99,9 +101,17 @@ export default function FinanceBreakdown() {
   const getProgressWidth = () => {
     if (step < 2) return 100;
     if (monthlyIncome === 0) return 0;
-    const spentSoFar = expenses
-      .slice(0, animatingExpense + 1)
+    const expensesToShow = Math.min(expenses.length, 15);
+    let spentSoFar = expenses
+      .slice(0, Math.min(animatingExpense + 1, expensesToShow))
       .reduce((sum, e) => sum + e.amount, 0);
+    // If we've shown 15 expenses, add the remaining expenses' total
+    if (animatingExpense >= expensesToShow - 1 && expenses.length > 15) {
+      const remainingExpensesTotal = expenses
+        .slice(15)
+        .reduce((sum, e) => sum + e.amount, 0);
+      spentSoFar += remainingExpensesTotal;
+    }
     return Math.max(0, ((monthlyIncome - spentSoFar) / monthlyIncome) * 100);
   };
 
@@ -182,13 +192,21 @@ export default function FinanceBreakdown() {
             className="mb-6"
           >
             <div className="h-8 bg-muted rounded-full overflow-hidden relative">
+              {/* Remaining portion - shrinks from left to right */}
               <motion.div
-                className="h-full bg-gradient-to-r from-success to-primary rounded-full"
+                className="h-full bg-green-500 absolute left-0 top-0 rounded-l-full"
                 initial={{ width: '100%' }}
                 animate={{ width: `${getProgressWidth()}%` }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.6, ease: 'easeOut' }}
               />
-              <div className="absolute inset-0 flex items-center justify-center">
+              {/* Spent portion - grows from right */}
+              <motion.div
+                className="h-full bg-destructive/30 absolute right-0 top-0 rounded-r-full"
+                initial={{ width: '0%' }}
+                animate={{ width: `${100 - getProgressWidth()}%` }}
+                transition={{ duration: 0.6, ease: 'easeOut' }}
+              />
+              <div className="absolute inset-0 flex items-center justify-center z-10">
                 <span className="text-sm font-medium text-foreground">
                   ${(monthlyIncome * (getProgressWidth() / 100)).toLocaleString(undefined, { maximumFractionDigits: 0 })} remaining
                 </span>
@@ -200,7 +218,7 @@ export default function FinanceBreakdown() {
         {/* Expenses list */}
         {step >= 2 && (
           <div className="space-y-3 mb-6">
-            {expenses.map((expense, index) => (
+            {expenses.slice(0, 15).map((expense, index) => (
               <AnimatePresence key={expense.id}>
                 {animatingExpense >= index && (
                   <motion.div
@@ -225,6 +243,26 @@ export default function FinanceBreakdown() {
                 )}
               </AnimatePresence>
             ))}
+            {/* Show "and X more" if there are more than 15 expenses */}
+            {expenses.length > 15 && animatingExpense >= 14 && (
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6 }}
+                className="flex items-center justify-between p-4 bg-card rounded-xl shadow-card"
+              >
+                <span className="font-medium text-muted-foreground">
+                  and {expenses.length - 15} more expenses
+                </span>
+                <motion.span
+                  className="text-destructive font-bold"
+                  initial={{ scale: 1.5 }}
+                  animate={{ scale: 1 }}
+                >
+                  -${expenses.slice(15).reduce((sum, e) => sum + e.amount, 0).toLocaleString()}
+                </motion.span>
+              </motion.div>
+            )}
           </div>
         )}
 
@@ -309,9 +347,9 @@ export default function FinanceBreakdown() {
               </p>
 
               <div className="bg-accent rounded-xl p-4 mb-6">
-                <p className="text-sm text-muted-foreground">Target: Save 10%</p>
-                <p className="font-bold text-lg">${Math.round(monthlyIncome * 0.1)}/month</p>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-sm text-black">Target: Save 10%</p>
+                <p className="font-bold text-lg text-black">${Math.round(monthlyIncome * 0.1)}/month</p>
+                <p className="text-sm text-black mt-1">
                   That's about ${Math.round((monthlyIncome * 0.1) / 4)} per week in small changes
                 </p>
               </div>
