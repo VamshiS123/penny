@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Marquee } from '@/components/ui/marquee';
 import { PennyAICard } from '@/components/landing/PennyAICard';
 import { PennyMascot } from '@/components/PennyMascot';
 import {
@@ -204,24 +205,18 @@ export default function Landing() {
             </p>
           </motion.div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card className="h-full border-2 border-primary shadow-neo hover:shadow-neo-lg hover:-translate-y-1 transition-all duration-300 p-6 rounded-xl bg-card">
+          <div className="overflow-hidden">
+            <Marquee pauseOnHover className="[--duration:40s] [--gap:2rem]">
+              {features.map((feature, index) => (
+                <Card key={feature.title} className="w-[300px] h-full border-2 border-primary shadow-neo hover:shadow-neo-lg hover:-translate-y-1 transition-all duration-300 p-6 rounded-xl bg-card shrink-0">
                   <div className="w-14 h-14 rounded-lg bg-accent-light border-2 border-primary shadow-neo-sm flex items-center justify-center mb-6">
                     <feature.icon className="w-7 h-7 text-accent" strokeWidth={2.5} />
                   </div>
                   <h3 className="text-xl font-bold mb-3 tracking-tight">{feature.title}</h3>
                   <p className="text-secondary leading-relaxed">{feature.description}</p>
                 </Card>
-              </motion.div>
-            ))}
+              ))}
+            </Marquee>
           </div>
         </div>
       </section>
@@ -328,12 +323,14 @@ export default function Landing() {
       {/* Trust Section */}
       <section className="py-12 bg-white border-y-2 border-primary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap justify-center items-center gap-8 lg:gap-16 mb-8">
-            {trustLogos.map((logo) => (
-              <span key={logo} className="text-xl font-black text-primary/80 tracking-widest hover:text-accent cursor-default transition-colors">
-                {logo}
-              </span>
-            ))}
+          <div className="mb-8 overflow-hidden">
+            <Marquee pauseOnHover className="[--duration:30s] [--gap:4rem]">
+              {trustLogos.map((logo) => (
+                <span key={logo} className="text-xl font-black text-primary/80 tracking-widest hover:text-accent cursor-default transition-colors shrink-0">
+                  {logo}
+                </span>
+              ))}
+            </Marquee>
           </div>
           <div className="flex justify-center items-center gap-6 text-sm font-bold text-secondary">
             <div className="flex items-center gap-2">

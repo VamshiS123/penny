@@ -124,6 +124,14 @@ export default {
           "60%": { transform: "scale(1.05)" },
           "100%": { opacity: "1", transform: "scale(1)" },
         },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(calc(-100% - var(--gap)))" },
+        },
+        "marquee-vertical": {
+          from: { transform: "translateY(0)" },
+          to: { transform: "translateY(calc(-100% - var(--gap)))" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -137,6 +145,8 @@ export default {
         "penny-bob": "penny-bob 2.5s ease-in-out infinite",
         "float": "float 6s ease-in-out infinite",
         "pop-in": "pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+        marquee: "marquee var(--duration) linear infinite",
+        "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
       },
     },
   },

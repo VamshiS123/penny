@@ -4,6 +4,7 @@ import { PennyMascot } from './PennyMascot';
 import { X, Lightbulb, TrendingUp, AlertTriangle, Send, Sparkles } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ScrollVelocity } from '@/components/ui/scroll-velocity';
 import pennyQuestions from '@/assets/penny-questions.png';
 
 const insights = [
@@ -180,19 +181,21 @@ export function PennyFAB() {
                   <Sparkles className="w-4 h-4 text-secondary" />
                   <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Latest Insights</span>
                 </div>
-                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                  {insights.map((insight, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap ${insight.color}`}
-                    >
-                      <insight.icon className="w-3.5 h-3.5" />
-                      <span className="max-w-[150px] truncate">{insight.message}</span>
-                    </motion.div>
-                  ))}
+                <div className="overflow-hidden pb-1">
+                  <ScrollVelocity 
+                    velocity={-3} 
+                    className="text-xs leading-normal tracking-normal"
+                  >
+                    {[...insights, ...insights, ...insights].map((insight, index) => (
+                      <div
+                        key={`${index}-${insight.type}`}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap ${insight.color} mr-4 shrink-0`}
+                      >
+                        <insight.icon className="w-3.5 h-3.5 shrink-0" />
+                        <span className="max-w-[150px] truncate">{insight.message}</span>
+                      </div>
+                    ))}
+                  </ScrollVelocity>
                 </div>
               </div>
 
