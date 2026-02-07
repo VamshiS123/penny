@@ -78,7 +78,11 @@ export default function Accounts() {
           </h2>
           <div className="space-y-3">
             {accounts
-              .filter(a => a.type === 'checking' || a.type === 'savings')
+              .filter(a => {
+                const name = a.name.toLowerCase();
+                const isBrokerage = name.includes('brokerage') || name.includes('investment');
+                return (a.type === 'checking' || a.type === 'savings') && !isBrokerage;
+              })
               .map((account, index) => {
                 const Icon = accountIcons[account.type] || Building2;
                 return (
@@ -119,7 +123,11 @@ export default function Accounts() {
           </h2>
           <div className="space-y-3">
             {accounts
-              .filter(a => a.type !== 'checking' && a.type !== 'savings')
+              .filter(a => {
+                const name = a.name.toLowerCase();
+                const isBrokerage = name.includes('brokerage') || name.includes('investment');
+                return a.type !== 'checking' && a.type !== 'savings' || isBrokerage;
+              })
               .map((account, index) => {
                 const Icon = accountIcons[account.type] || CreditCard;
                 const isCredit = account.type === 'credit' || account.balance < 0;

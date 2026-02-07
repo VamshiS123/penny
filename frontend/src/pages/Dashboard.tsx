@@ -30,21 +30,25 @@ export default function Dashboard() {
   // Calculate net worth based on time range
   const baseNetWorth = accounts.reduce((sum, acc) => sum + acc.balance, 0);
   const netWorth = useMemo(() => {
-    if (timeRange === '1M') return baseNetWorth / 6;
-    if (timeRange === '1Y') return baseNetWorth * 2;
-    return baseNetWorth; // 6M is default
+    let value = baseNetWorth;
+    if (timeRange === '1M') value = baseNetWorth / 6;
+    if (timeRange === '1Y') value = baseNetWorth * 2;
+    return Math.round(value * 100) / 100; // Round to 2 decimal places
   }, [baseNetWorth, timeRange]);
 
   const baseNetWorthChange = 2.4;
   const netWorthChange = useMemo(() => {
-    if (timeRange === '1M') return baseNetWorthChange / 6;
-    if (timeRange === '1Y') return baseNetWorthChange * 2;
-    return baseNetWorthChange;
+    let value = baseNetWorthChange;
+    if (timeRange === '1M') value = baseNetWorthChange / 6;
+    if (timeRange === '1Y') value = baseNetWorthChange * 2;
+    return Math.round(value * 10) / 10; // Round to 1 decimal place
   }, [timeRange]);
   
-  const totalSpent = transactions
-    .filter(t => t.amount < 0 && new Date(t.date).getUTCMonth() === new Date().getUTCMonth())
-    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+  const totalSpent = Math.round(
+    transactions
+      .filter(t => t.amount < 0 && new Date(t.date).getUTCMonth() === new Date().getUTCMonth())
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0) * 100
+  ) / 100; // Round to 2 decimal places
 
   const monthlyBudget = data.monthlyIncome || 4500;
   const hourlyRate = data.calculatedHourlyRate || 27.88;
@@ -125,10 +129,10 @@ export default function Dashboard() {
           <div>
             <p className="text-sm text-muted-foreground mb-1">Current Net Worth</p>
             <div className="flex items-center gap-3">
-              <h1 className="text-4xl font-bold">${netWorth.toLocaleString('en-US', { minimumFractionDigits: 2 })}</h1>
+              <h1 className="text-4xl font-bold">${netWorth.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h1>
               <div className="flex items-center gap-1 text-green-500">
                 <TrendingUp className="w-4 h-4" />
-                <span className="font-medium">{netWorthChange}%</span>
+                <span className="font-medium">{netWorthChange.toFixed(1)}%</span>
               </div>
             </div>
           </div>
@@ -159,6 +163,7 @@ export default function Dashboard() {
             let adjustedBalance = account.balance;
             if (timeRange === '1M') adjustedBalance = account.balance / 6;
             if (timeRange === '1Y') adjustedBalance = account.balance * 2;
+            adjustedBalance = Math.round(adjustedBalance * 100) / 100; // Round to 2 decimal places
             
             return (
               <Card key={account.id} className="p-2 border-2 border-border">
@@ -171,7 +176,7 @@ export default function Dashboard() {
                   </button>
                 </div>
                 <p className="text-xs text-muted-foreground leading-tight">{account.name}</p>
-                <p className="text-base font-bold leading-tight">${adjustedBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                <p className="text-base font-bold leading-tight">${adjustedBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
               </Card>
             );
           })}

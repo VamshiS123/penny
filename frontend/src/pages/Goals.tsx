@@ -1,16 +1,23 @@
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { useFinance } from '@/contexts/FinanceContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { GoalCard } from '@/components/goals/GoalCard';
 import { XPCard } from '@/components/goals/XPCard';
 import { ChallengeCard } from '@/components/goals/ChallengeCard';
 import { AchievementBadge } from '@/components/goals/AchievementBadge';
 import { 
   Plus, Sparkles, Trophy, Shield, Plane, Car,
-  Flame, Coins, Ghost, Target, Crown, Clock, Users, Egg
+  Flame, Coins, Ghost, Target, Crown, Clock, Users, Egg, CreditCard, Home, GraduationCap, Star
 } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
+import { toast } from 'sonner';
+import * as api from '@/lib/api';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface BadgeData {
   id: string;
@@ -32,8 +39,25 @@ const recentXP = [
   { action: 'Completed challenge', xp: 50, time: '2 days ago' },
 ];
 
+const goalOptions = [
+  { id: 'emergency', name: 'Emergency Fund', icon: Shield, description: "For life's surprises" },
+  { id: 'vacation', name: 'Vacation', icon: Plane, description: 'You deserve a break' },
+  { id: 'debt', name: 'Pay Off Debt', icon: CreditCard, description: 'Freedom from payments' },
+  { id: 'car', name: 'New Car', icon: Car, description: 'Upgrade your ride' },
+  { id: 'house', name: 'House Down Payment', icon: Home, description: 'Plant your roots' },
+  { id: 'education', name: 'Education', icon: GraduationCap, description: 'Invest in yourself' },
+  { id: 'custom', name: 'Custom Goal', icon: Star, description: 'Something else' },
+];
+
 export default function Goals() {
   const { data } = useFinance();
+  const queryClient = useQueryClient();
+  const [newGoalOpen, setNewGoalOpen] = useState(false);
+  const [addFundsOpen, setAddFundsOpen] = useState<string | null>(null);
+  const [newGoalName, setNewGoalName] = useState('');
+  const [newGoalAmount, setNewGoalAmount] = useState('');
+  const [newGoalType, setNewGoalType] = useState('custom');
+  const [addFundsAmount, setAddFundsAmount] = useState('');
   
   const goals = data.selectedGoals.map(g => ({
     ...g,
@@ -51,6 +75,67 @@ export default function Goals() {
       icon: a.icon,
       unlocked: !!a.unlockedAt
   }));
+
+  const handleCreateGoal = async () => {
+    if (!newGoalAmount || parseFloat(newGoalAmount) <= 0) {
+      toast.error('Please enter a valid target amount');
+      return;
+    }
+
+    try {
+      const selectedOption = goalOptions.find(o => o.id === newGoalType);
+      const goalName = newGoalName.trim() || selectedOption?.name || 'Custom Goal';
+      
+      await api.createGoal({
+        name: goalName,
+        description: selectedOption?.description || 'Custom goal',
+        target_amount: Math.round(parseFloat(newGoalAmount) * 100) / 100, // Round to 2 decimal places
+        icon: selectedOption?.id || 'custom',
+      });
+      
+      await queryClient.invalidateQueries({ queryKey: ['goals'] });
+      await queryClient.invalidateQueries({ queryKey: ['user'] });
+      toast.success('Goal created successfully!');
+      setNewGoalOpen(false);
+      setNewGoalName('');
+      setNewGoalAmount('');
+      setNewGoalType('custom');
+    } catch (error) {
+      toast.error('Failed to create goal');
+      console.error(error);
+    }
+  };
+
+  const handleAddFunds = async (goalId: string) => {
+    if (!addFundsAmount || parseFloat(addFundsAmount) <= 0) {
+      toast.error('Please enter a valid amount');
+      return;
+    }
+
+    try {
+      const goal = goals.find(g => g.id === goalId);
+      if (!goal) {
+        toast.error('Goal not found');
+        return;
+      }
+
+      const amountToAdd = Math.round(parseFloat(addFundsAmount) * 100) / 100; // Round to 2 decimal places
+      const newSavedAmount = Math.round((goal.savedAmount + amountToAdd) * 100) / 100; // Round to 2 decimal places
+      
+      await api.updateGoal(goalId, {
+        saved_amount: newSavedAmount,
+      });
+      
+      await queryClient.invalidateQueries({ queryKey: ['goals'] });
+      await queryClient.invalidateQueries({ queryKey: ['user'] });
+      toast.success(`Added $${amountToAdd.toFixed(2)} to ${goal.name}`);
+      setAddFundsOpen(null);
+      setAddFundsAmount('');
+    } catch (error) {
+      toast.error('Failed to add funds');
+      console.error(error);
+    }
+  };
 
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto">
@@ -79,21 +164,92 @@ export default function Goals() {
           >
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-display font-bold">Your Goals</h2>
-              <Button size="sm" className="brutal-btn-primary gap-2">
-                <Plus className="w-4 h-4" />
-                New Goal
-              </Button>
+              <Dialog open={newGoalOpen} onOpenChange={setNewGoalOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="brutal-btn-primary gap-2">
+                    <Plus className="w-4 h-4" />
+                    New Goal
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Create New Goal</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Goal Type</Label>
+                      <select
+                        value={newGoalType}
+                        onChange={(e) => setNewGoalType(e.target.value)}
+                        className="w-full mt-1 px-3 py-2 border-2 border-border rounded-lg bg-card"
+                      >
+                        {goalOptions.map(option => (
+                          <option key={option.id} value={option.id}>{option.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <Label>Goal Name</Label>
+                      <Input
+                        value={newGoalName}
+                        onChange={(e) => setNewGoalName(e.target.value)}
+                        placeholder="e.g., Emergency Fund"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label>Target Amount</Label>
+                      <Input
+                        type="number"
+                        value={newGoalAmount}
+                        onChange={(e) => setNewGoalAmount(e.target.value)}
+                        placeholder="5000"
+                        className="mt-1"
+                      />
+                    </div>
+                    <Button onClick={handleCreateGoal} className="w-full">
+                      Create Goal
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
 
             <div className="space-y-4">
               {goals.map((goal, index) => (
-                <GoalCard 
-                  key={goal.id} 
-                  goal={goal} 
-                  index={index}
-                  onAddFunds={() => console.log('Add funds to', goal.name)}
-                  onViewDetails={() => console.log('View', goal.name)}
-                />
+                <div key={goal.id}>
+                  <GoalCard 
+                    goal={goal} 
+                    index={index}
+                    onAddFunds={() => setAddFundsOpen(goal.id)}
+                    onViewDetails={() => console.log('View', goal.name)}
+                  />
+                  <Dialog open={addFundsOpen === goal.id} onOpenChange={(open) => !open && setAddFundsOpen(null)}>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add Funds to {goal.name}</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label>Amount to Add</Label>
+                          <Input
+                            type="number"
+                            value={addFundsAmount}
+                            onChange={(e) => setAddFundsAmount(e.target.value)}
+                            placeholder="0.00"
+                            className="mt-1"
+                          />
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Current: ${goal.savedAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / ${goal.targetAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </div>
+                        <Button onClick={() => handleAddFunds(goal.id)} className="w-full">
+                          Add Funds
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               ))}
             </div>
           </motion.div>

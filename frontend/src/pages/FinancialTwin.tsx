@@ -35,49 +35,49 @@ const generateTwinData = (
       {
         category: 'Housing',
         icon: Home,
-        yourAmount: getExp('Housing', 1400),
+        yourAmount: Math.round(getExp('Housing', 1400) * 100) / 100,
         twinAverage: 1350,
-        difference: getExp('Housing', 1400) - 1350,
+        difference: Math.round((getExp('Housing', 1400) - 1350) * 100) / 100,
         percentile: 55,
       },
       {
         category: 'Food & Dining', // Matches 'Food' or 'Food & Drink'
         icon: Pizza,
-        yourAmount: getExp('Food', 450),
+        yourAmount: Math.round(getExp('Food', 450) * 100) / 100,
         twinAverage: 520,
-        difference: getExp('Food', 450) - 520,
+        difference: Math.round((getExp('Food', 450) - 520) * 100) / 100,
         percentile: 35,
       },
       {
         category: 'Transportation',
         icon: Car,
-        yourAmount: getExp('Transportation', 350),
+        yourAmount: Math.round(getExp('Transportation', 350) * 100) / 100,
         twinAverage: 380,
-        difference: getExp('Transportation', 350) - 380,
+        difference: Math.round((getExp('Transportation', 350) - 380) * 100) / 100,
         percentile: 42,
       },
       {
         category: 'Entertainment',
         icon: Clapperboard,
-        yourAmount: getExp('Entertainment', 200),
+        yourAmount: Math.round(getExp('Entertainment', 200) * 100) / 100,
         twinAverage: 180,
-        difference: getExp('Entertainment', 200) - 180,
+        difference: Math.round((getExp('Entertainment', 200) - 180) * 100) / 100,
         percentile: 62,
       },
       {
         category: 'Shopping',
         icon: ShoppingBag,
-        yourAmount: getExp('Shopping', 280),
+        yourAmount: Math.round(getExp('Shopping', 280) * 100) / 100,
         twinAverage: 310,
-        difference: getExp('Shopping', 280) - 310,
+        difference: Math.round((getExp('Shopping', 280) - 310) * 100) / 100,
         percentile: 38,
       },
       {
         category: 'Subscriptions',
         icon: RefreshCw,
-        yourAmount: getExp('Subscriptions', 127),
+        yourAmount: Math.round(getExp('Subscriptions', 127) * 100) / 100,
         twinAverage: 145,
-        difference: getExp('Subscriptions', 127) - 145,
+        difference: Math.round((getExp('Subscriptions', 127) - 145) * 100) / 100,
         percentile: 40,
       },
     ],
@@ -118,7 +118,8 @@ export default function FinancialTwin() {
   // Calculate category totals
   const categoryTotals: Record<string, number> = {};
   data.expenses.forEach(e => {
-      categoryTotals[e.category] = (categoryTotals[e.category] || 0) + e.amount;
+      const currentTotal = categoryTotals[e.category] || 0;
+      categoryTotals[e.category] = Math.round((currentTotal + e.amount) * 100) / 100; // Round to 2 decimal places
   });
 
   const twinData = generateTwinData({
@@ -268,16 +269,16 @@ export default function FinancialTwin() {
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="text-right">
-                          <p className="font-bold">${comp.yourAmount}</p>
+                          <p className="font-bold">${comp.yourAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                           <p className="text-xs text-muted-foreground">You</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-medium text-muted-foreground">${comp.twinAverage}</p>
+                          <p className="font-medium text-muted-foreground">${comp.twinAverage.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                           <p className="text-xs text-muted-foreground">Avg Twin</p>
                         </div>
                         <div className={`w-20 text-right ${comp.difference <= 0 ? 'text-success' : 'text-destructive'}`}>
                           <p className="font-bold">
-                            {comp.difference > 0 ? '+' : ''}{comp.difference}
+                            {comp.difference > 0 ? '+' : ''}${Math.abs(comp.difference).toFixed(2)}
                           </p>
                           {comp.difference <= 0 ? (
                             <TrendingDown className="w-4 h-4 inline" />

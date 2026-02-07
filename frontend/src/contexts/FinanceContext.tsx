@@ -211,7 +211,18 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
 
   const createGoalMutation = useMutation({
     mutationFn: api.createGoal,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['goals'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['goals'] });
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+    },
+  });
+
+  const updateGoalMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) => api.updateGoal(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['goals'] });
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+    },
   });
 
   const unlockAchievementMutation = useMutation({

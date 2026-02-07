@@ -38,20 +38,20 @@ export function ChallengeCard({ challenges }: ChallengeCardProps) {
               className="group"
             >
               <div className="flex justify-between items-center mb-2">
-                <span className="font-medium text-sm group-hover:text-primary transition-colors">
+                <span className="font-medium text-sm group-hover:text-primary transition-colors flex-1">
                   {challenge.name}
                 </span>
-                <div className="flex items-center gap-1 text-secondary">
-                  <Zap className="w-3.5 h-3.5" />
-                  <span className="text-sm font-bold">+{challenge.xpReward}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground">
+                    {challenge.progress}%
+                  </span>
+                  <div className="flex items-center gap-1 text-secondary">
+                    <Zap className="w-3.5 h-3.5" />
+                    <span className="text-sm font-bold">+{challenge.xpReward}</span>
+                  </div>
                 </div>
               </div>
-              <div className="relative">
-                <Progress value={challenge.progress} className="h-2.5" />
-                <span className="absolute right-0 -top-5 text-xs text-muted-foreground">
-                  {challenge.progress}%
-                </span>
-              </div>
+              <Progress value={challenge.progress} className="h-2.5" />
             </motion.div>
           ))}
         </div>

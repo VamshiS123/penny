@@ -26,22 +26,25 @@ export default function Budgets() {
   data.transactions.forEach(t => {
       const d = new Date(t.date);
       if (d.getUTCMonth() === currentMonth && d.getUTCFullYear() === currentYear && t.type === 'expense') {
-          spendingByCategory[t.category] = (spendingByCategory[t.category] || 0) + Math.abs(t.amount);
+          const currentTotal = spendingByCategory[t.category] || 0;
+          spendingByCategory[t.category] = Math.round((currentTotal + Math.abs(t.amount)) * 100) / 100; // Round to 2 decimal places
       }
   });
 
-  const budgets: Budget[] = data.expenses.map(e => ({
-      id: e.id,
-      name: e.name,
-      icon: e.icon || Utensils,
-      allocated: e.amount,
-      spent: Math.round(spendingByCategory[e.category] || 0),
-      color: 'bg-primary'
-  }));
+  const budgets: Budget[] = data.expenses
+      .map(e => ({
+          id: e.id,
+          name: e.name,
+          icon: e.icon || Utensils,
+          allocated: Math.round(e.amount * 100) / 100, // Round to 2 decimal places
+          spent: Math.round((spendingByCategory[e.category] || 0) * 100) / 100, // Round to 2 decimal places
+          color: 'bg-primary'
+      }))
+      .filter(b => b.spent > 0); // Only show budgets with spending
 
-  const totalAllocated = budgets.reduce((sum, b) => sum + b.allocated, 0);
-  const totalSpent = budgets.reduce((sum, b) => sum + b.spent, 0);
-  const remaining = totalAllocated - totalSpent;
+  const totalAllocated = Math.round(budgets.reduce((sum, b) => sum + b.allocated, 0) * 100) / 100;
+  const totalSpent = Math.round(budgets.reduce((sum, b) => sum + b.spent, 0) * 100) / 100;
+  const remaining = Math.round((totalAllocated - totalSpent) * 100) / 100;
 
   return (
     <div className="p-6 md:p-8 max-w-6xl mx-auto page-enter">
@@ -65,7 +68,7 @@ export default function Budgets() {
           className="brutal-card"
         >
           <p className="text-sm font-medium text-muted-foreground mb-1">Total Budget</p>
-          <p className="text-3xl font-bold">${totalAllocated.toLocaleString()}</p>
+          <p className="text-3xl font-bold">${totalAllocated.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           <p className="text-xs text-muted-foreground mt-2">This month</p>
         </motion.div>
 
@@ -76,11 +79,11 @@ export default function Budgets() {
           className="brutal-card"
         >
           <p className="text-sm font-medium text-muted-foreground mb-1">Spent</p>
-          <p className="text-3xl font-bold">${totalSpent.toLocaleString()}</p>
+          <p className="text-3xl font-bold">${totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           <div className="flex items-center gap-1 mt-2">
             <TrendingUp className="w-4 h-4" />
             <span className="text-xs text-muted-foreground">
-              {Math.round((totalSpent / totalAllocated) * 100)}% of budget
+              {totalAllocated > 0 ? Math.round((totalSpent / totalAllocated) * 100) : 0}% of budget
             </span>
           </div>
         </motion.div>
@@ -93,7 +96,7 @@ export default function Budgets() {
         >
           <p className="text-sm font-medium text-muted-foreground mb-1">Remaining</p>
           <p className={`text-3xl font-bold ${remaining < 0 ? 'text-destructive' : ''}`}>
-            {remaining < 0 ? '-' : ''}${Math.abs(remaining).toLocaleString()}
+            {remaining < 0 ? '-' : ''}${Math.abs(remaining).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
           <div className="flex items-center gap-1 mt-2">
             {remaining >= 0 ? (
@@ -114,7 +117,7 @@ export default function Budgets() {
       {/* Budget List */}
       <div className="space-y-4">
         {budgets.map((budget, index) => {
-          const percentage = Math.min((budget.spent / budget.allocated) * 100, 100);
+          const percentage = budget.allocated > 0 ? Math.min(Math.round((budget.spent / budget.allocated) * 100 * 100) / 100, 100) : 0;
           const isOverBudget = budget.spent > budget.allocated;
           const IconComponent = budget.icon;
 
@@ -132,17 +135,17 @@ export default function Budgets() {
                     <IconComponent className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-bold">{budget.name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      ${budget.spent} of ${budget.allocated}
+                    <h3 className={`font-bold ${isOverBudget ? 'text-destructive' : ''}`}>{budget.name}</h3>
+                    <p className={`text-sm ${isOverBudget ? 'text-destructive' : 'text-muted-foreground'}`}>
+                      ${budget.spent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} of ${budget.allocated.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className={`font-bold ${isOverBudget ? 'text-destructive' : ''}`}>
-                    {isOverBudget ? '-' : ''}${Math.abs(budget.allocated - budget.spent)}
+                    {isOverBudget ? '-' : ''}${Math.abs(Math.round((budget.allocated - budget.spent) * 100) / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className={`text-xs ${isOverBudget ? 'text-destructive' : 'text-muted-foreground'}`}>
                     {isOverBudget ? 'over' : 'left'}
                   </p>
                 </div>
@@ -154,7 +157,7 @@ export default function Budgets() {
                     initial={{ width: 0 }}
                     animate={{ width: `${percentage}%` }}
                     transition={{ duration: 0.8, delay: index * 0.05 }}
-                    className={`h-full ${isOverBudget ? 'bg-red-500' : budget.color}`}
+                    className={`h-full ${isOverBudget ? 'bg-red-500' : 'bg-green-500'}`}
                   />
                 </div>
                 {isOverBudget && (
