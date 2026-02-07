@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "sonner";
+import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { FinanceProvider, useFinance } from "@/contexts/FinanceContext";
 import Landing from "./pages/Landing";
@@ -45,8 +44,7 @@ const App = () => {
   return (
     <FinanceProvider>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
+        <Toaster theme="light" />
         {showIntro && <IntroVideo onComplete={() => setShowIntro(false)} />}
         <Routes>
           <Route path="/" element={<Landing />} />
