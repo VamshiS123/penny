@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Penny Companion</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app" class="container">
+    <div class="header">
+      <img src="assets/penny-mascot.png" alt="Penny" class="logo">
+      <h1>Penny</h1>
+    </div>
+
+    <div id="login-view" class="view">
+      <div class="card">
+        <h2>Login</h2>
+        <p class="subtitle">Ready to save some time?</p>
+        <form id="login-form">
+          <div class="input-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="alex@example.com" required>
+          </div>
+          <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" required>
+          </div>
+          <button type="submit" class="brutal-btn-primary">Sign In</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="status-view" class="view hidden">
+      <div class="card">
+        <div class="mascot-container">
+          <img src="assets/penny-waving.png" alt="Penny" id="mascot-status" class="mascot">
+        </div>
+        <h2 id="user-name">Hello!</h2>
+        <div class="stats">
+          <div class="stat-item">
+            <span class="label">Hourly Rate</span>
+            <span id="hourly-rate" class="value">$0.00</span>
+          </div>
+          <div class="stat-item">
+            <span class="label">Balance</span>
+            <span id="balance" class="value">$0.00</span>
+          </div>
+        </div>
+        <button id="logout-btn" class="brutal-btn-outline">Logout</button>
+      </div>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

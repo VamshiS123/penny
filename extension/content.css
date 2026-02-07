@@ -1,0 +1,104 @@
+.penny-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.penny-modal {
+  background: #fdfdfd;
+  border: 4px solid #252525;
+  padding: 32px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 12px 12px 0px 0px #252525;
+  text-align: center;
+  position: relative;
+}
+
+.penny-mascot-img {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 16px;
+}
+
+.penny-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 16px 0;
+  color: #252525;
+}
+
+.penny-content {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  color: #444;
+}
+
+.penny-stats {
+  background: #f1f1f1;
+  border: 2px solid #252525;
+  padding: 16px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.penny-stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+.penny-time-cost {
+  color: #725e3f; /* Warm Goldish */
+  font-size: 20px;
+  font-weight: 800;
+  margin: 16px 0;
+}
+
+.penny-buttons {
+  display: flex;
+  gap: 16px;
+}
+
+.penny-btn {
+  flex: 1;
+  padding: 12px;
+  font-weight: bold;
+  border: 2px solid #252525;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.penny-btn-cancel {
+  background: white;
+  color: #252525;
+  box-shadow: 4px 4px 0px 0px #252525;
+}
+
+.penny-btn-proceed {
+  background: #455a64; /* Slate Blue */
+  color: white;
+  box-shadow: 4px 4px 0px 0px #252525;
+}
+
+.penny-btn:active {
+  box-shadow: none;
+  transform: translate(4px, 4px);
+}
+
+.penny-dodge {
+  transition: transform 0.1s ease-out !important;
+  pointer-events: auto !important;
+}

@@ -38,7 +38,7 @@ if Config.DEBUG:
     # CORS Middleware for development
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://frontend:5173", "http://frontend:8000", "http://localhost:5173"],
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
