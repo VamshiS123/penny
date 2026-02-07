@@ -53,6 +53,11 @@ export default function Onboarding() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const continueButtonRef = useRef<HTMLButtonElement>(null);
   const [currentStep, setCurrentStep] = useState(0);
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const [incomeType, setIncomeType] = useState<'salary' | 'hourly'>('salary');
   const [salary, setSalary] = useState('');
   const [payFrequency, setPayFrequency] = useState('biweekly');
@@ -261,13 +266,7 @@ export default function Onboarding() {
     switch (currentStep) {
       case 0:
         return (
-          <motion.div
-            key="income"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
-          >
+          <div className="space-y-6">
             {/* Income type toggle */}
             <div className="flex p-1 bg-muted/50 rounded-full border-2 border-border/10">
               <button
@@ -368,18 +367,12 @@ export default function Onboarding() {
                 </p>
               </motion.div>
             )}
-          </motion.div>
+          </div>
         );
 
       case 1:
         return (
-          <motion.div
-            key="about"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
-          >
+          <div className="space-y-6">
             <div>
               <Label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block font-bold">Age</Label>
               <Input
@@ -439,18 +432,12 @@ export default function Onboarding() {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </div>
         );
 
       case 2:
         return (
-          <motion.div
-            key="goals"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
-          >
+          <div className="space-y-6">
             <div className="flex justify-between items-center">
               <p className="text-sm text-secondary font-medium">Select 1-3 goals</p>
               <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${selectedGoals.length > 0 ? 'bg-accent-light text-accent' : 'bg-muted text-muted-foreground'}`}>
@@ -510,7 +497,8 @@ export default function Onboarding() {
                               value={goalAmounts[goal.id] || ''}
                               onChange={e => setGoalAmounts(prev => ({ ...prev, [goal.id]: e.target.value }))}
                               onClick={e => e.stopPropagation()}
-                              className="pl-4 h-8 text-sm bg-transparent border-0 border-b-2 border-primary/30 rounded-none px-0 focus-visible:ring-0 focus-visible:border-primary placeholder:text-muted-foreground/50 font-medium"
+                              style={{ paddingLeft: '2.5rem' }}
+                              className="h-8 text-sm bg-transparent border-0 border-b-2 border-primary/30 rounded-none px-0 focus-visible:ring-0 focus-visible:border-primary placeholder:text-muted-foreground/50 font-medium"
                             />
                           </div>
                         </motion.div>
@@ -520,18 +508,12 @@ export default function Onboarding() {
                 );
               })}
             </div>
-          </motion.div>
+          </div>
         );
 
       case 3:
         return (
-          <motion.div
-            key="connect"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-5"
-          >
+          <div className="space-y-5">
             <div className="grid gap-5">
               <Card className="p-6 cursor-pointer hover:bg-muted/10 transition-all border-2 border-border/10 bg-white hover:border-primary/50 hover:shadow-neo-sm group">
                 <div className="flex items-center gap-5">
@@ -580,7 +562,7 @@ export default function Onboarding() {
                 Skip for now — I'll use sample data
               </button>
             </div>
-          </motion.div>
+          </div>
         );
 
       default:
@@ -679,9 +661,19 @@ export default function Onboarding() {
 
             {/* Step Content */}
             <div className="min-h-[320px]">
-              <AnimatePresence mode="wait">
-                {renderStepContent()}
-              </AnimatePresence>
+              {isMounted && (
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={currentStep}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {renderStepContent()}
+                  </motion.div>
+                </AnimatePresence>
+              )}
             </div>
 
             {/* Navigation */}
