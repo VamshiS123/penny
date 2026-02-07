@@ -285,6 +285,19 @@ export async function equipItem(id: string) {
 
 
 
+export async function analyzeReceipt(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch(`${API_URL}/transactions/analyze`, {
+    method: "POST",
+    headers: { ...getAuthHeader() },
+    body: formData,
+  });
+  if (!res.ok) throw new Error("Failed to analyze receipt");
+  return res.json();
+}
+
 export async function chatWithPenny(message: string, history: { role: string, content: string }[] = []) {
 
   const res = await fetch(`${API_URL}/chat/`, {

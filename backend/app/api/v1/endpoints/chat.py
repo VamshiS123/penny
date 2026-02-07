@@ -336,7 +336,7 @@ async def chat(
         return ChatResponse(response="I'm sorry, but the OpenRouter API key is not configured. I cannot assist you at the moment.")
 
     llm = ChatOpenAI(
-        model="google/gemini-2.0-flash-001",
+        model="google/gemini-2.5-flash",
         api_key=Config.OPENROUTER_API_KEY,
         base_url="https://openrouter.ai/api/v1",
         model_kwargs={"stop": ["\nHuman:", "\nUser:"]},

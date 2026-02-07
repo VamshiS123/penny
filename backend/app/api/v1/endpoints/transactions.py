@@ -1,7 +1,7 @@
 import uuid
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.api.deps import get_db
@@ -9,14 +9,33 @@ from app.core.users import current_active_user
 from app.crud import transaction as crud_transaction
 from app.models.transaction import Transaction, TransactionCreate, TransactionUpdate
 from app.models.user import User
+from app.services.receipt_analysis import analyze_receipt_image, ReceiptItem, ReceiptAnalysisResponse
 
 router = APIRouter()
+
+@router.post("/analyze", response_model=ReceiptAnalysisResponse)
+async def analyze_receipt(
+    file: UploadFile = File(...),
+    current_user: User = Depends(current_active_user),
+) -> ReceiptAnalysisResponse:
+    """
+    Analyze a receipt image and return potential transactions.
+    """
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="File must be an image.")
+    
+    contents = await file.read()
+    try:
+        response = await analyze_receipt_image(contents)
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to analyze receipt: {str(e)}")
 
 @router.get("/", response_model=List[Transaction])
 async def read_transactions(
     db: AsyncSession = Depends(get_db),
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 1000,
     current_user: User = Depends(current_active_user),
 ) -> List[Transaction]:
     """

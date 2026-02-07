@@ -245,10 +245,6 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
 
   const createTransactionMutation = useMutation({
     mutationFn: api.createTransaction,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] });
-      queryClient.invalidateQueries({ queryKey: ['user'] }); // XP/Coins might change
-    }
   });
 
 
@@ -512,7 +508,12 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
           await uploadCSVMutation.mutateAsync(file);
       },
       addTransaction: async (data: any) => {
-          return await createTransactionMutation.mutateAsync(data);
+          const result = await createTransactionMutation.mutateAsync(data);
+          await Promise.all([
+             queryClient.invalidateQueries({ queryKey: ['transactions'] }),
+             queryClient.invalidateQueries({ queryKey: ['user'] })
+          ]);
+          return result;
       },
     }}>
       {children}

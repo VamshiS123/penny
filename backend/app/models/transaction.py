@@ -1,4 +1,4 @@
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime, timezone
 import uuid
 from sqlmodel import Field, Relationship, SQLModel
@@ -6,6 +6,7 @@ from pydantic import validator
 
 if TYPE_CHECKING:
     from .user import User
+    from .transaction_split import TransactionSplit
 
 class TransactionBase(SQLModel):
     merchant: str
@@ -35,9 +36,14 @@ class Transaction(TransactionBase, table=True):
     user_id: uuid.UUID = Field(foreign_key="user.id")
     
     user: "User" = Relationship(back_populates="transactions")
+    splits: List["TransactionSplit"] = Relationship(back_populates="transaction", sa_relationship_kwargs={"cascade": "all, delete"})
+
+# Need to import this late or use forward ref for Pydantic if defined in same file? 
+# Better to define a Pydantic model for input that includes splits.
+from .transaction_split import TransactionSplitCreate, TransactionSplit
 
 class TransactionCreate(TransactionBase):
-    pass
+    splits: List[TransactionSplitCreate] = []
 
 class TransactionUpdate(SQLModel):
     merchant: Optional[str] = None
