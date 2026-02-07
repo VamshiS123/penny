@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { PennyMascot } from '@/components/PennyMascot';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import {
-  Clock, Calendar, Search, TrendingUp, Users,
+import { 
+  Clock, Calendar, Search, TrendingUp, Users, 
   Landmark, Upload, CheckCircle, Shield, Lock,
   Sparkles, Globe, Share2, MessageSquare, Heart
 } from 'lucide-react';
@@ -35,6 +36,71 @@ const features = [
 
 const trustLogos = ['BANKSAFE', 'COSECURE', 'FINTECH.LY', 'SECUREPAY'];
 
+// Custom component to render typewriter text with gradient on "time"
+function TypewriterTextWithGradient() {
+  const [displayText, setDisplayText] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [videoEnded, setVideoEnded] = useState(false);
+  const fullText = "See where your time really goes";
+  const speed = 80;
+
+  // Check if intro video has completed
+  useEffect(() => {
+    // Check sessionStorage for video completion
+    const checkVideoCompletion = () => {
+      const completed = sessionStorage.getItem('introVideoCompleted');
+      if (completed === 'true') {
+        setVideoEnded(true);
+      } else {
+        // If not completed yet, check periodically
+        const interval = setInterval(() => {
+          const completed = sessionStorage.getItem('introVideoCompleted');
+          if (completed === 'true') {
+            setVideoEnded(true);
+            clearInterval(interval);
+          }
+        }, 100);
+        return () => clearInterval(interval);
+      }
+    };
+    
+    checkVideoCompletion();
+  }, []);
+
+  useEffect(() => {
+    // Only start typing after video ends
+    if (!videoEnded) {
+      return;
+    }
+
+    if (currentIndex < fullText.length) {
+      const timeout = setTimeout(() => {
+        setDisplayText(fullText.slice(0, currentIndex + 1));
+        setCurrentIndex(prev => prev + 1);
+      }, speed);
+      return () => clearTimeout(timeout);
+    }
+  }, [currentIndex, fullText, videoEnded]);
+
+  // Split the text and apply gradient to "time"
+  const renderText = () => {
+    const parts = displayText.split(/(time)/i);
+    return parts.map((part, index) => {
+      if (part.toLowerCase() === 'time') {
+        return <span key={index} className="gradient-text">{part}</span>;
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
+  return (
+    <>
+      {renderText()}
+      {currentIndex < fullText.length && <span className="animate-pulse">|</span>}
+    </>
+  );
+}
+
 export default function Landing() {
   const navigate = useNavigate();
 
@@ -46,12 +112,6 @@ export default function Landing() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
               <span className="text-xl font-display font-bold">Penny</span>
-            </div>
-
-            <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
-              <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
-              <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
             </div>
 
             <div className="flex items-center gap-3">
@@ -80,9 +140,7 @@ export default function Landing() {
               </Badge>
 
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-extrabold leading-tight mb-6">
-                See where your{' '}
-                <span className="gradient-text">time</span>
-                {' '}really goes
+                <TypewriterTextWithGradient />
               </h1>
 
               <p className="text-lg text-muted-foreground mb-8 max-w-lg">
