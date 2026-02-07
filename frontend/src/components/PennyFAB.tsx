@@ -107,10 +107,18 @@ export function PennyFAB() {
     <>
       {/* FAB Button */}
       <motion.button
-        className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/80 shadow-glow flex items-center justify-center z-50 overflow-hidden"
+        className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-accent flex items-center justify-center z-50 overflow-hidden"
+        style={{ 
+          clipPath: 'circle(50%)',
+          backgroundColor: 'var(--accent)',
+          boxShadow: '0 4px 14px 0 rgba(232, 119, 58, 0.4)',
+          outline: 'none',
+          border: 'none'
+        }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
+        onFocus={(e) => e.target.blur()}
         animate={{
           y: [0, -5, 0],
         }}
@@ -118,15 +126,16 @@ export function PennyFAB() {
           y: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
         }}
       >
+        <div className="absolute inset-0 bg-accent rounded-full" style={{ backgroundColor: 'var(--accent)' }}></div>
         <img 
           src={pennyQuestions} 
           alt="Penny" 
-          className="w-14 h-14 object-contain"
+          className="w-14 h-14 object-contain relative brightness-110 contrast-125 drop-shadow-lg z-10"
         />
         
         {/* Notification badge */}
         {!isOpen && (
-          <span className="absolute -top-1 -right-1 w-5 h-5 bg-secondary text-secondary-foreground text-xs font-bold rounded-full flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 w-5 h-5 bg-secondary text-secondary-foreground text-xs font-bold rounded-full flex items-center justify-center z-20">
             {insights.length}
           </span>
         )}

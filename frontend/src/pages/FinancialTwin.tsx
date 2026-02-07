@@ -10,7 +10,6 @@ import {
   ArrowRight, Trophy, Target, Lightbulb,
   User, MapPin, Home, Pizza, Car, Clapperboard, ShoppingBag, RefreshCw, Medal, Award
 } from 'lucide-react';
-import { PennyMascot } from '@/components/PennyMascot';
 
 // Mock "Financial Twin" data based on similar demographics
 const generateTwinData = (
@@ -172,8 +171,6 @@ export default function FinancialTwin() {
           className="max-w-2xl mx-auto text-center py-12"
         >
           <Card className="p-8 bg-gradient-to-br from-primary/10 to-secondary/10">
-            <PennyMascot mood="thinking" size="lg" className="mx-auto mb-6" />
-            
             <h2 className="text-2xl font-display font-bold mb-4">
               Find Your Financial Twins
             </h2>
@@ -194,7 +191,12 @@ export default function FinancialTwin() {
               </Badge>
             </div>
             
-            <Button size="lg" onClick={handleCompare} className="group">
+            <Button 
+              size="lg" 
+              onClick={handleCompare} 
+              className="group w-full sm:w-auto"
+              type="button"
+            >
               Compare My Spending
               <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
@@ -376,7 +378,6 @@ export default function FinancialTwin() {
             {/* Penny's Take */}
             <Card className="p-6 border-2 border-primary/20">
               <div className="flex items-start gap-3">
-                <PennyMascot mood="celebrating" size="sm" />
                 <div>
                   <p className="font-medium text-sm">
                     "You're doing great! You spend less than your Twins in 4 out of 6 categories!"

@@ -3,11 +3,21 @@ import { useFinance } from '@/contexts/FinanceContext';
 import { Card } from '@/components/ui/card';
 import { 
   TrendingUp, Search, Bell, Flame, Plus, MoreVertical,
-  CheckCircle, AlertTriangle, Lightbulb, Clock
+  CheckCircle, AlertTriangle, Lightbulb, Clock,
+  Building2, CreditCard, Wallet
 } from 'lucide-react';
 import { PennyMascot } from '@/components/PennyMascot';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import pennyScroll from '@/assets/penny-scroll.png';
+
+// Account logo mapping
+const getAccountLogo = (accountName: string) => {
+  const name = accountName.toLowerCase();
+  if (name.includes('chase')) return Building2;
+  if (name.includes('amex') || name.includes('american express')) return CreditCard;
+  if (name.includes('brokerage') || name.includes('investment')) return TrendingUp;
+  return Wallet; // Default icon
+};
 
 export default function Dashboard() {
   const { data } = useFinance();
@@ -17,8 +27,20 @@ export default function Dashboard() {
   const transactions = data.transactions || [];
   const expenses = data.expenses || [];
 
-  const netWorth = accounts.reduce((sum, acc) => sum + acc.balance, 0);
-  const netWorthChange = 2.4; // Placeholder or calculate if history available
+  // Calculate net worth based on time range
+  const baseNetWorth = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+  const netWorth = useMemo(() => {
+    if (timeRange === '1M') return baseNetWorth / 6;
+    if (timeRange === '1Y') return baseNetWorth * 2;
+    return baseNetWorth; // 6M is default
+  }, [baseNetWorth, timeRange]);
+
+  const baseNetWorthChange = 2.4;
+  const netWorthChange = useMemo(() => {
+    if (timeRange === '1M') return baseNetWorthChange / 6;
+    if (timeRange === '1Y') return baseNetWorthChange * 2;
+    return baseNetWorthChange;
+  }, [timeRange]);
   
   const totalSpent = transactions
     .filter(t => t.amount < 0 && new Date(t.date).getUTCMonth() === new Date().getUTCMonth())
@@ -131,20 +153,28 @@ export default function Dashboard() {
 
         {/* Account Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {accounts.map((account) => (
-            <Card key={account.id} className="p-4 border-2 border-border">
-              <div className="flex items-start justify-between mb-3">
-                <div className={`w-10 h-10 ${account.color} flex items-center justify-center text-white font-bold`}>
-                  {account.initial}
+          {accounts.map((account) => {
+            const LogoIcon = getAccountLogo(account.name);
+            // Calculate adjusted balance based on time range
+            let adjustedBalance = account.balance;
+            if (timeRange === '1M') adjustedBalance = account.balance / 6;
+            if (timeRange === '1Y') adjustedBalance = account.balance * 2;
+            
+            return (
+              <Card key={account.id} className="p-2 border-2 border-border">
+                <div className="flex items-center justify-between mb-1">
+                  <div className={`w-6 h-6 ${account.color} flex items-center justify-center text-white flex-shrink-0`}>
+                    <LogoIcon className="w-4 h-4" />
+                  </div>
+                  <button className="text-muted-foreground hover:text-foreground">
+                    <MoreVertical className="w-3 h-3" />
+                  </button>
                 </div>
-                <button className="text-muted-foreground hover:text-foreground">
-                  <MoreVertical className="w-5 h-5" />
-                </button>
-              </div>
-              <p className="text-sm text-muted-foreground">{account.name}</p>
-              <p className="text-xl font-bold">${account.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
-            </Card>
-          ))}
+                <p className="text-xs text-muted-foreground leading-tight">{account.name}</p>
+                <p className="text-base font-bold leading-tight">${adjustedBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+              </Card>
+            );
+          })}
           
           {/* Link Account Card */}
           <Card className="p-4 border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground cursor-pointer transition-colors">
