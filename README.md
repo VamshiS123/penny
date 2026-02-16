@@ -25,11 +25,11 @@ The project follows a modern microservices-inspired architecture, containerized 
 ```mermaid
 graph TD
     User((User))
-    ext[Browser Extension]
-    fe[Frontend (React + Vite)]
-    be[Backend (FastAPI)]
-    db[(PostgreSQL + pgvector)]
-    ai[OpenAI / LLM Service]
+    ext["Browser Extension"]
+    fe["Frontend (React + Vite)"]
+    be["Backend (FastAPI)"]
+    db[("PostgreSQL + pgvector")]
+    ai["OpenAI / LLM Service"]
 
     User -->|Interacts| fe
     User -->|Browses Shops| ext
