@@ -44,20 +44,20 @@ graph TD
 
 ## Features
 
-### 🖥️ Frontend Dashboard
+### Frontend Dashboard
 - **Financial Breakdown**: Visualize income, expenses, and savings with interactive charts.
 - **Goal Tracking**: Set financial goals and track progress with gamified XP and badges.
 - **Receipt Analysis**: Upload receipts for automatic line-item extraction and categorization.
 - **Financial Twin**: Simulate future financial scenarios based on current habits.
 - **Gamification**: Earn achievements like "Savings Streak" or "Budget Master."
 
-### ⚙️ Backend API
+### Backend API
 - **AI-Powered Analysis**: Uses LangChain and OpenAI to interpret receipts and shopping carts.
 - **Vector Search**: Utilizes `pgvector` for semantic search across transaction data.
 - **Robust API**: Built with FastAPI for high performance and automatic documentation.
 - **Secure Authentication**: User management and security handled via `fastapi-users`.
 
-### 🧩 Browser Extension
+### Browser Extension
 - **Real-time Insights**: Analyzes shopping carts on supported sites to show the "true cost" (e.g., "This item equals 2 hours of work").
 - **Companion Mode**: Penny mascot provides helpful tips and warnings while browsing.
 
